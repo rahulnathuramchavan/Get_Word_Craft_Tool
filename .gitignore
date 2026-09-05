@@ -6,6 +6,7 @@ node_modules/
 # Build outputs
 dist/
 build/
+!apps/web/dist/
 .next/
 out/
 
