@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"setup": "npm install",
-		"hostinger:build": "npm install --prefix apps/web && npm run build --prefix apps/web",
+		"hostinger:build": "npm install --prefix apps/web && npm run build --prefix apps/web && node scripts/sync-to-root.js",
 		"dev": "concurrently --kill-others --raw \"npm run dev --prefix apps/web\"",
 		"build": "concurrently --raw \"npm run build --prefix apps/web\"",
 		"start": "concurrently --kill-others --raw",
