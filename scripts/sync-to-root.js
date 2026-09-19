@@ -16,20 +16,20 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const ROOT   = resolve(__dirname, '..');
 const DIST   = join(ROOT, 'apps', 'web', 'dist');
 
-const files = ['index.html', '.htaccess', 'icon.svg', 'robots.txt'];
+const files = ['index.html', '.htaccess', 'icon.svg', 'robots.txt', 'sitemap.xml'];
 const dirs  = ['assets'];
 
-console.log('\n📦  sync-to-root: copying build output to repo root...\n');
+const PUBLIC = join(ROOT, 'apps', 'web', 'public');
 
-// Copy individual files
+// Copy individual files (prefer dist/, fall back to public/ for static assets)
 for (const file of files) {
-  const src = join(DIST, file);
+  const src = existsSync(join(DIST, file)) ? join(DIST, file) : join(PUBLIC, file);
   const dst = join(ROOT, file);
   if (existsSync(src)) {
     copyFileSync(src, dst);
-    console.log(`  ✔  ${file}`);
+    console.log(`  ✔  ${file}${src.includes('public') ? ' (from public/)' : ''}`);
   } else {
-    console.warn(`  ⚠  ${file} not found in dist — skipped`);
+    console.warn(`  ⚠  ${file} not found in dist/ or public/ — skipped`);
   }
 }
 
