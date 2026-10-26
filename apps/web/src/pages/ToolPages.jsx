@@ -17,6 +17,9 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import {
+  WordFinderGuide, UnscramblerGuide, AnagramGuide, CrosswordGuide,
+} from '@/components/ToolGuides';
 
 const related = (path) => TOOLS.filter((t) => t.path !== path).slice(0, 4);
 
@@ -69,7 +72,7 @@ const WF_FAQS = [
   },
   {
     q: 'What does the Common words dictionary mode do?',
-    a: 'It limits results to words that appear in a 10,000-word common-English frequency list, hiding rare and archaic words. The Full dictionary mode searches the complete 170,000+ word ENABLE list.',
+    a: 'It limits results to words that appear in a 10,000-word common-English frequency list, hiding rare and archaic words. The Full dictionary mode searches the complete 437,000+ word open English dictionary.',
   },
   {
     q: 'How are tile scores calculated?',
@@ -148,6 +151,7 @@ export function WordFinderPage() {
         crumbs={[{ label: 'Home', to: '/' }, { label: 'Word Finder' }]}
         faqs={WF_FAQS}
         related={related('/word-finder')}
+        guide={<WordFinderGuide />}
       >
         <div className="grid gap-5">
           <div className="grid gap-5 sm:grid-cols-2">
@@ -268,7 +272,7 @@ export function UnscramblerPage() {
   }, [result]);
 
   const search = () => {
-    if (letters.replace(/\?/g, '').length < 2) {
+    if (letters.length < 2 || letters.replace(/\?/g, '').length < 1) {
       setFormError('Enter at least two letters. Use ? for blank tiles.');
       return;
     }
@@ -305,6 +309,7 @@ export function UnscramblerPage() {
         crumbs={[{ label: 'Home', to: '/' }, { label: 'Word Unscrambler' }]}
         faqs={WU_FAQS}
         related={related('/word-unscrambler')}
+        guide={<UnscramblerGuide />}
       >
         <div className="grid gap-5">
           <TileInput
@@ -410,6 +415,7 @@ export function AnagramPage() {
         crumbs={[{ label: 'Home', to: '/' }, { label: 'Anagram Solver' }]}
         faqs={AN_FAQS}
         related={related('/anagram-solver')}
+        guide={<AnagramGuide />}
       >
         <div className="grid gap-5">
           <TileInput
@@ -439,7 +445,7 @@ export function AnagramPage() {
 const CW_FAQS = [
   {
     q: 'How do I enter a crossword pattern?',
-    a: 'Type the letters you have and a ? for each empty square. For example, c?t?r matches "cater", "cider", and every other five-letter word with that shape.',
+    a: 'Type the letters you have and a ? for each empty square. For example, c?t?r matches "cater", "cotter", and every other five-letter word with that shape.',
   },
   {
     q: 'Can I require a letter anywhere in the word?',
@@ -490,6 +496,7 @@ export function CrosswordPage() {
         crumbs={[{ label: 'Home', to: '/' }, { label: 'Crossword Finder' }]}
         faqs={CW_FAQS}
         related={related('/crossword-finder')}
+        guide={<CrosswordGuide />}
       >
         <div className="grid gap-5">
           <div className="grid gap-5 sm:grid-cols-2">

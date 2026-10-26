@@ -77,7 +77,16 @@ export function RelatedTools({ items }) {
   );
 }
 
-export default function ToolShell({ title, description, crumbs, children, faqs, related }) {
+export function ToolGuide({ guide }) {
+  if (!guide) return null;
+  return (
+    <section aria-labelledby="guide-heading" className="mt-12 rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+      {guide}
+    </section>
+  );
+}
+
+export default function ToolShell({ title, description, crumbs, children, faqs, related, guide }) {
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:py-12">
       <Breadcrumbs items={crumbs} />
@@ -89,6 +98,7 @@ export default function ToolShell({ title, description, crumbs, children, faqs, 
         {children}
       </section>
       <AdSlot className="mt-10" />
+      {guide && <ToolGuide guide={guide} />}
       <FaqSection faqs={faqs} />
       <RelatedTools items={related} />
     </div>

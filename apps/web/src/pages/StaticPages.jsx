@@ -60,33 +60,130 @@ const PAGES = {
     path: '/privacy',
     title: 'Privacy Policy',
     heading: 'Privacy Policy',
-    description: 'How WordCraft Tool handles data — short version: your searches stay on your device.',
+    lastUpdated: 'October 27, 2026',
+    description: 'Privacy Policy for GetWordCraft — how information is processed and stored.',
     sections: [
       {
-        h: 'The short version',
+        h: '1. The Short Version',
         p: [
-          'WordCraft Tool does not require an account and does not collect your searches. Every word search runs entirely in your browser against a word list downloaded to your device. We never see the letters you enter.',
+          'GetWordCraft provides online word tools without requiring users to create an account.',
+          'Most word searches are designed to run directly in your browser using a word list available on your device. The website\'s search functionality is intended to process your entered letters locally rather than transmit each search to our servers.',
+          'Some features, such as looking up word definitions, may send the word you request to an external service. Our hosting provider may also process technical information necessary to operate, secure, and maintain the website.',
+          'Please read this policy to understand how information may be processed when you use GetWordCraft.',
         ],
       },
       {
-        h: 'What is stored on your device',
+        h: '2. Information Stored on Your Device',
         p: [
-          'The only data this site stores is in your own browser\'s local storage: interface preferences such as your chosen dictionary mode. This data never leaves your device, and you can clear it at any time through your browser settings.',
+          'GetWordCraft\'s word tools run directly in temporary browser memory. The website may use your browser\'s local storage to save interface preferences, such as your selected dictionary mode, if persistent preference saving is enabled.',
+          'Information stored locally in your browser generally remains on your device unless a website feature or browser mechanism transmits it elsewhere. You can usually clear locally stored information through your browser settings.',
+          'The exact information stored may depend on the tools you use and the website\'s current implementation.',
         ],
       },
       {
-        h: 'Third-party services',
-        p: [
-          'Definitions are provided by the Free Dictionary API (dictionaryapi.dev); when you look up a word, that word is sent to their service to fetch its entry. Fonts are loaded from Google Fonts. If advertising is enabled, our ad partner (such as Google AdSense) may use cookies or similar technologies to serve and measure ads, subject to its own privacy policy and your consent choices.',
-          'Standard hosting logs (IP address, browser type, pages requested) are kept by our hosting provider for security and reliability, and are not used to identify individual visitors.',
+        h: '3. Third-Party Services',
+        subsections: [
+          {
+            h: 'Dictionary Definitions',
+            p: [
+              'GetWordCraft may use the Free Dictionary API (dictionaryapi.dev) and the Datamuse API (datamuse.com) to retrieve word definitions.',
+              'When you request a definition, the word you enter is sent to that service to retrieve its corresponding entry. The service may process technical information associated with the request according to its own practices and policies.',
+            ],
+          },
+          {
+            h: 'Google Fonts',
+            p: [
+              'The website may load fonts from Google Fonts. When externally hosted fonts are requested, your browser may connect to Google\'s servers to retrieve the required font resources.',
+              'Please refer to Google\'s applicable privacy information for details about its services.',
+            ],
+          },
+          {
+            h: 'Advertising Services',
+            p: [
+              'If advertising services such as Google AdSense are enabled, advertising providers may use cookies or similar technologies to display advertisements, measure advertising performance, prevent fraud, and support other advertising-related functions.',
+              'The information processed and the technologies used depend on the advertising services implemented and the applicable settings, consent choices, and legal requirements.',
+              'This section should be updated to reflect the actual advertising configuration before advertising is activated.',
+            ],
+          },
+          {
+            h: 'Website Hosting',
+            p: [
+              'Our hosting provider may process technical information, such as IP addresses, browser information, requested pages, timestamps, and server logs, to operate, maintain, and protect the website.',
+              'The information collected, its retention period, and its permitted uses depend on the hosting provider\'s configuration and applicable policies.',
+            ],
+          },
         ],
       },
       {
-        h: 'Your choices',
+        h: '4. How We Use Information',
         p: [
-          'You can use every tool on this site without sharing any personal information. You may block cookies, clear local storage, or browse privately at any time — the tools will keep working.',
-          'Questions about this policy? Contact us at hello@getwordcraft.com.',
+          'Depending on the feature and service involved, information may be processed to:',
         ],
+        list: [
+          'Provide word searches and related tool functionality.',
+          'Retrieve dictionary definitions.',
+          'Remember interface preferences.',
+          'Maintain website performance and reliability.',
+          'Detect errors, abuse, or security issues.',
+          'Display and measure advertisements, if advertising is enabled.',
+        ],
+        footerPara: 'We do not require users to create an account to access the website\'s basic word tools.',
+      },
+      {
+        h: '5. Cookies and Similar Technologies',
+        p: [
+          'GetWordCraft\'s own features may use browser storage to remember interface preferences.',
+          'Third-party services, including advertising or analytics providers if enabled, may use cookies or similar technologies for their own purposes.',
+          'You can manage cookies and other browser storage through your browser settings. Blocking or clearing these technologies may affect certain preferences or features.',
+          'Where required, applicable consent choices will be provided for relevant cookies or other technologies.',
+        ],
+      },
+      {
+        h: '6. Data Sharing',
+        p: [
+          'Information may be processed by third-party service providers when necessary to deliver a requested feature, operate the website, maintain security, or provide advertising if enabled.',
+          'Examples include dictionary-definition services, font providers, hosting providers, and advertising providers.',
+          'The information shared depends on the feature used and the services currently integrated into the website.',
+        ],
+      },
+      {
+        h: '7. Your Choices',
+        p: [
+          'You can access GetWordCraft\'s basic word tools without creating an account.',
+          'Depending on your browser and the services enabled on the website, you may be able to:',
+        ],
+        list: [
+          'Clear locally stored website preferences.',
+          'Manage or block cookies through your browser.',
+          'Use private browsing.',
+          'Adjust applicable advertising or consent preferences.',
+        ],
+        footerPara: 'Some third-party-powered features may require information to be sent to the relevant service to function.',
+      },
+      {
+        h: '8. Children\'s Privacy',
+        p: [
+          'GetWordCraft is a general-purpose word-tools website. If the website is not intended to collect personal information from children, its practices should be configured and maintained accordingly.',
+          'If you have questions about children\'s privacy or believe personal information has been submitted through a website feature, please contact us using the details below.',
+        ],
+      },
+      {
+        h: '9. Changes to This Policy',
+        p: [
+          'We may update this Privacy Policy when the website\'s features, third-party services, advertising arrangements, or applicable requirements change.',
+          'When updates are made, the revised policy will be published on this page with an updated revision date.',
+        ],
+      },
+      {
+        h: '10. Contact Us',
+        p: [
+          'If you have questions about this Privacy Policy, you can contact us at:',
+        ],
+        contactDetails: {
+          email: 'hello@getwordcraft.com',
+          website: 'GetWordCraft',
+          domain: 'getwordcraft.com',
+        },
       },
     ],
   },
@@ -170,6 +267,11 @@ function StaticPage({ pageKey }) {
         <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           {page.heading}
         </h1>
+        {page.lastUpdated && (
+          <p className="mt-2 text-sm text-muted-foreground">
+            Last updated: {page.lastUpdated}
+          </p>
+        )}
         {pageKey === 'contact' && (
           <a
             href="mailto:hello@getwordcraft.com"
@@ -181,13 +283,54 @@ function StaticPage({ pageKey }) {
         {page.sections.map((s) => (
           <section key={s.h} className="mt-8">
             <h2 className="font-display text-2xl font-semibold text-foreground">{s.h}</h2>
-            {s.p.map((para, i) => (
+            {s.p && s.p.map((para, i) => (
               <p key={i} className="mt-3 leading-relaxed text-foreground/90">{para}</p>
             ))}
+            {s.subsections && (
+              <div className="mt-4 space-y-4">
+                {s.subsections.map((sub, j) => (
+                  <div key={j} className="rounded-xl border border-border bg-card/60 p-4 sm:p-5">
+                    <h3 className="font-display text-lg font-semibold text-foreground">{sub.h}</h3>
+                    {sub.p.map((para, k) => (
+                      <p key={k} className="mt-2 text-sm leading-relaxed text-foreground/90 sm:text-base">{para}</p>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+            {s.list && (
+              <ul className="mt-3 list-disc space-y-1.5 pl-6 leading-relaxed text-foreground/90">
+                {s.list.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
+            )}
+            {s.footerPara && (
+              <p className="mt-3 leading-relaxed text-foreground/90">{s.footerPara}</p>
+            )}
+            {s.contactDetails && (
+              <div className="mt-4 rounded-xl border border-border bg-card p-4 space-y-2 text-sm text-foreground/90">
+                <p>
+                  <strong className="text-foreground">Email:</strong>{' '}
+                  <a href={`mailto:${s.contactDetails.email}`} className="text-primary underline hover:text-primary/80">
+                    {s.contactDetails.email}
+                  </a>
+                  {s.contactDetails.note && (
+                    <span className="block mt-0.5 text-xs text-muted-foreground italic">{s.contactDetails.note}</span>
+                  )}
+                </p>
+                {s.contactDetails.website && (
+                  <p><strong className="text-foreground">Website:</strong> {s.contactDetails.website}</p>
+                )}
+                {s.contactDetails.domain && (
+                  <p><strong className="text-foreground">Domain:</strong> {s.contactDetails.domain}</p>
+                )}
+              </div>
+            )}
           </section>
         ))}
         <p className="mt-10 border-t border-border pt-6 text-xs text-muted-foreground">
-          Last updated: August 2026 · WordCraft Tool · getwordcraft.com
+          Last updated: {page.lastUpdated || 'August 2026'} · WordCraft Tool · getwordcraft.com
         </p>
       </div>
     </>

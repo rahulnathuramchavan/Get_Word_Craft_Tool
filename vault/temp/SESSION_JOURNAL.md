@@ -121,3 +121,48 @@
 - message: signal is aborted without reason
 - durationMs: 8000
 
+## 2026-10-26 19:12:58.485Z load
+- url: http://localhost:3000/
+- title: WordCraft Tool — Find Better Words, Solve Puzzles Faster
+
+## 2026-10-26 19:13:00.127Z navigate
+- url: http://localhost:3000/
+- via: replaceState
+
+## 2026-10-26 20:09:47.991Z load
+- url: http://localhost:3000/
+- title: WordCraft Tool — Find Better Words, Solve Puzzles Faster
+
+## 2026-10-26 20:09:49.786Z navigate
+- url: http://localhost:3000/
+- via: replaceState
+
+## 2026-10-26 20:13:02.744Z load
+- url: http://localhost:3000/
+- title: WordCraft Tool — Find Better Words, Solve Puzzles Faster
+
+## 2026-10-26 20:13:04.610Z navigate
+- url: http://localhost:3000/
+- via: replaceState
+
+## 2026-10-26 20:13:22.880Z click
+- element: {"tag":"a","role":null,"ariaLabel":null,"name":null,"type":null,"id":null,"placeholder":null,"label":null,"value":null,"valueLength":0,"text":"Privacy Policy"}
+
+## 2026-10-26 20:13:22.882Z navigate
+- url: http://localhost:3000/privacy
+- via: pushState
+
+## 2026-10-26 20:28:02.228Z click
+- element: {"tag":"a","role":null,"ariaLabel":null,"name":null,"type":null,"id":null,"placeholder":null,"label":null,"value":null,"valueLength":0,"text":"Word Finder"}
+
+## 2026-10-26 20:28:02.237Z navigate
+- url: http://localhost:3000/word-finder
+- via: pushState
+
+## 2026-10-26 20:28:05.207Z click
+- element: {"tag":"a","role":null,"ariaLabel":"WordCraft Tool home","name":null,"type":null,"id":null,"placeholder":null,"label":null,"value":null,"valueLength":0,"text":"WWordCraft Tool"}
+
+## 2026-10-26 20:28:05.208Z navigate
+- url: http://localhost:3000/
+- via: pushState
+

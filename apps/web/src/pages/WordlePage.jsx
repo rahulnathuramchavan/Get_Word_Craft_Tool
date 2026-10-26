@@ -5,6 +5,7 @@ import Seo from '@/components/Seo';
 import JsonLd from '@/components/JsonLd';
 import ToolShell from '@/components/ToolShell';
 import { WordChip } from '@/components/Results';
+import { WordleGuide } from '@/components/ToolGuides';
 import useDictionary from '@/hooks/useDictionary';
 import { wordleFilter } from '@/lib/dictionary';
 import { TOOLS } from '@/lib/tools';
@@ -115,6 +116,7 @@ export default function WordlePage() {
         crumbs={[{ label: 'Home', to: '/' }, { label: 'Wordle Helper' }]}
         faqs={FAQS}
         related={TOOLS.filter((t) => t.path !== '/wordle-helper').slice(0, 4)}
+        guide={<WordleGuide />}
       >
         <div className="grid gap-6 lg:grid-cols-[auto_1fr]">
           <div>
