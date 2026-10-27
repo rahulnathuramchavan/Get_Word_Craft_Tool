@@ -4,10 +4,6 @@
  * dictionary-engine.js for pure testability and performance.
  */
 
-// eslint-disable-next-line import/no-unresolved
-import wordsTxt from '@/data/words.txt?raw';
-// eslint-disable-next-line import/no-unresolved
-import commonTxt from '@/data/common.txt?raw';
 import {
   LETTER_SCORES,
   MAX_RESULTS,
@@ -52,17 +48,17 @@ let dictPromise = null;
 
 export function loadDictionary() {
   if (!dictPromise) {
-    // Defer parsing so the first paint is never blocked by indexing words.
-    dictPromise = new Promise((resolve, reject) => {
-      window.setTimeout(() => {
-        try {
-          resolve(buildDictionary(wordsTxt, commonTxt));
-        } catch {
-          dictPromise = null;
-          reject(new Error('The word list could not be prepared. Please reload the page.'));
-        }
-      }, 30);
-    });
+    dictPromise = (async () => {
+      try {
+        const { fetchDictionaryTexts } = await import('./dictionary-data');
+        const { wordsTxt, commonTxt } = await fetchDictionaryTexts();
+        return buildDictionary(wordsTxt, commonTxt);
+      } catch (err) {
+        dictPromise = null;
+        throw new Error(err?.message || 'The word list could not be prepared. Please reload the page.');
+      }
+    })();
   }
   return dictPromise;
 }
+

@@ -10,7 +10,11 @@ import { cn } from '@/lib/utils';
 
 export function Logo({ className }) {
   return (
-    <Link to="/" className={cn('flex items-center gap-2.5', className)} aria-label="WordCraft Tool home">
+    <Link
+      to="/"
+      className={cn('flex items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background', className)}
+      aria-label="WordCraft Tool home"
+    >
       <span className="flex h-9 w-9 rotate-[-4deg] items-center justify-center rounded-lg bg-primary shadow-sm">
         <span className="font-display text-lg font-bold text-primary-foreground">W</span>
       </span>
@@ -53,7 +57,7 @@ const LEARN_LINKS = [
 
 function navLinkClass({ isActive }) {
   return cn(
-    'rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-secondary hover:text-foreground',
+    'rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
     isActive ? 'text-foreground underline decoration-primary decoration-2 underline-offset-8' : 'text-muted-foreground',
   );
 }
@@ -81,7 +85,7 @@ export default function Layout({ children }) {
               </NavLink>
             ))}
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+              <DropdownMenuTrigger className="flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
                 More tools <ChevronDown className="h-4 w-4" aria-hidden="true" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
@@ -95,7 +99,7 @@ export default function Layout({ children }) {
             <NavLink to="/learn" className={navLinkClass}>Learn</NavLink>
             <Link
               to="/word-finder"
-              className="ml-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-transform hover:brightness-105 active:scale-[0.98]"
+              className="ml-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-transform hover:brightness-105 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               Find a word
             </Link>
@@ -105,7 +109,7 @@ export default function Layout({ children }) {
             <SheetTrigger asChild>
               <button
                 type="button"
-                className="flex h-11 w-11 items-center justify-center rounded-lg border border-border bg-card text-foreground lg:hidden"
+                className="flex h-11 w-11 items-center justify-center rounded-lg border border-border bg-card text-foreground lg:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 aria-label="Open menu"
               >
                 <Menu className="h-5 w-5" aria-hidden="true" />

@@ -24,11 +24,12 @@ import {
 const related = (path) => TOOLS.filter((t) => t.path !== path).slice(0, 4);
 
 function Field({ id, label, children, hint }) {
+  const hintId = hint ? `${id}-hint` : undefined;
   return (
     <div className="flex flex-col gap-2">
       <label htmlFor={id} className="text-sm font-semibold text-foreground">{label}</label>
       {children}
-      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+      {hint && <p id={hintId} className="text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
 }
@@ -64,19 +65,23 @@ function ResetButton({ onClick }) {
 const WF_FAQS = [
   {
     q: 'What is the difference between "Letters" and "Pattern"?',
-    a: 'Letters is a rack: the tool finds words that can be built from those letters in any order, and a ? counts as a blank tile. Pattern is positional: c?t only returns three-letter words starting with c and ending with t.',
+    a: 'Letters represents your rack: the tool finds words built from those tiles in any order, where a ? acts as a blank tile. Pattern represents fixed board squares: c?t only returns three-letter words starting with c and ending with t.',
   },
   {
-    q: 'Can I combine filters?',
-    a: 'Yes. Every filter stacks. For example, letters "r?tain", starts with "re", and a maximum length of 7 finds short re- words you can build from that rack.',
+    q: 'Can I combine rack letters with positional filters?',
+    a: 'Yes. All filters stack seamlessly. For example, entering letters "r?tain", starts with "re", and setting max length to 7 finds short words with the prefix re- playable from your rack tiles.',
   },
   {
-    q: 'What does the Common words dictionary mode do?',
-    a: 'It limits results to words that appear in a 10,000-word common-English frequency list, hiding rare and archaic words. The Full dictionary mode searches the complete 437,000+ word open English dictionary.',
+    q: 'How does dictionary mode affect my results?',
+    a: 'Full dictionary searches our complete 437,000+ open English word list. Common words narrows results down to ~9,400 familiar, everyday English terms, hiding obscure archaic words for casual play.',
   },
   {
-    q: 'How are tile scores calculated?',
-    a: 'Scores use the classic English letter values: common letters like E and A are worth 1 point, while Q and Z are worth 10. They are a guide to a word\'s value, not a guarantee of what any specific game will award.',
+    q: 'How are tile scores calculated when using wildcards?',
+    a: 'Scores display standard English letter values (A=1, D=2, B=3, F=4, K=5, J=8, Q=10, Z=10). In physical board games, blank tiles score 0 points, so keep that in mind when calculating plays built with ? wildcards.',
+  },
+  {
+    q: 'What should I do if no words match my search?',
+    a: 'Try loosening your constraints: remove length limits, clear prefix or suffix requirements, or add a ? wildcard to your letters. If you only want to rearrange a jumble without board patterns, try the Word Unscrambler.',
   },
 ];
 
@@ -135,7 +140,7 @@ export function WordFinderPage() {
   return (
     <>
       <Helmet>
-        <title>Word Finder — Search by Letters, Pattern, Prefix & Suffix | WordCraft Tool</title>
+        <title>Word Finder — Search by Letters & Patterns | WordCraft Tool</title>
         <meta name="description" content="Find words from any rack of letters with wildcards, patterns, length limits, prefixes, suffixes, and dictionary modes. Free, fast, and private." />
         <link rel="canonical" href={`${SITE_URL}/word-finder`} />
       </Helmet>
@@ -180,7 +185,7 @@ export function WordFinderPage() {
                 onChange={(e) => set('contains')(e.target.value.toLowerCase().replace(/[^a-z]/g, ''))} placeholder="ai" />
             </Field>
             <Field id="wf-required" label="Must include letters" hint="Every letter listed must appear in the word.">
-              <input id="wf-required" className={inputClass} value={form.required}
+              <input id="wf-required" aria-describedby="wf-required-hint" className={inputClass} value={form.required}
                 onChange={(e) => set('required')(e.target.value.toLowerCase().replace(/[^a-z]/g, ''))} placeholder="qz" />
             </Field>
             <Field id="wf-min" label="Min length">
@@ -207,7 +212,7 @@ export function WordFinderPage() {
             </Field>
             <Field id="wf-mode" label="Dictionary" hint="Common hides rare and archaic words.">
               <Select value={form.mode} onValueChange={set('mode')}>
-                <SelectTrigger id="wf-mode" className="h-11 bg-background"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="wf-mode" aria-describedby="wf-mode-hint" className="h-11 bg-background"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Full dictionary</SelectItem>
                   <SelectItem value="common">Common words</SelectItem>
@@ -237,15 +242,19 @@ export function WordFinderPage() {
 const WU_FAQS = [
   {
     q: 'Does the unscrambler handle duplicate letters?',
-    a: 'Yes. If your rack has two Es, results only include words that use at most two Es. Every letter — including repeats — is counted.',
+    a: 'Yes. If your rack has two Es, results only include words that require at most two Es. Every letter — including duplicates — is strictly accounted for.',
   },
   {
-    q: 'What does the ? tile do?',
-    a: 'A question mark is a blank tile that can stand in for any single letter. You can use more than one, though results grow quickly with each wildcard.',
+    q: 'What does the ? wildcard tile do?',
+    a: 'A question mark acts as a blank tile that can represent any of the 26 letters of the alphabet. You can enter multiple wildcards, though possible combinations grow quickly with each blank.',
   },
   {
-    q: 'Why do I see words shorter than my rack?',
-    a: 'The unscrambler finds every word your letters can build, not just the longest ones. Shorter words are often the highest-scoring plays in tight board positions.',
+    q: 'Why does the unscrambler show words shorter than my rack?',
+    a: 'The unscrambler reveals every playable word your letters can form, not just full-length anagrams. Shorter words are often essential for making high-scoring parallel plays in tight board positions.',
+  },
+  {
+    q: 'What should I do if my rack yields no words?',
+    a: 'Double-check your spelling, try adding a wildcard (?), or check if you entered numbers or punctuation. If you need words that start or end with a specific letter on the board, use the Word Finder.',
   },
 ];
 
@@ -365,12 +374,20 @@ export function UnscramblerPage() {
 
 const AN_FAQS = [
   {
-    q: 'What counts as an anagram?',
-    a: 'An anagram uses every letter you enter exactly once, rearranged. "listen" is an anagram of "silent". Words that use only some of your letters belong in the Word Unscrambler instead.',
+    q: 'What counts as an exact anagram?',
+    a: 'An exact anagram uses every single letter you enter exactly once to form a new valid dictionary word. For example, "listen" is an exact anagram of "silent". Words that use only a portion of your letters appear in the Word Unscrambler.',
   },
   {
-    q: 'Can I solve anagrams with a missing letter?',
-    a: 'Yes — enter a ? for each unknown letter and the solver returns every same-length word that fits, treating ? as any letter.',
+    q: 'Can I solve anagrams when a letter is missing?',
+    a: 'Yes — enter a ? for each unknown letter. The solver will test all possible letter replacements and return every same-length word that fits.',
+  },
+  {
+    q: 'Does the solver support multi-word anagrams?',
+    a: 'This solver targets single dictionary words to provide instant results for word games and crosswords. It does not generate multi-word phrases or sentences.',
+  },
+  {
+    q: 'Why does my input word not appear in the results list?',
+    a: 'The solver intentionally excludes the query word itself so you can immediately see true alternative rearrangements without clutter.',
   },
 ];
 
@@ -445,11 +462,19 @@ export function AnagramPage() {
 const CW_FAQS = [
   {
     q: 'How do I enter a crossword pattern?',
-    a: 'Type the letters you have and a ? for each empty square. For example, c?t?r matches "cater", "cotter", and every other five-letter word with that shape.',
+    a: 'Type the known letters in their exact positions and use a question mark (?) or dot (.) for each blank square. For example, c?t?r matches "cater", "cotter", and all other 5-letter words with that shape.',
   },
   {
-    q: 'Can I require a letter anywhere in the word?',
-    a: 'Yes — use the "Must include letters" filter. It is handy when a crossing word tells you a letter exists somewhere but not exactly where.',
+    q: 'Can I require a letter to appear anywhere in the word?',
+    a: 'Yes — enter letters in the "Must include letters" field. This is particularly helpful when crossing grid answers confirm that a letter exists in the solution without revealing its exact slot.',
+  },
+  {
+    q: 'Does this tool solve crossword clues by trivia or meaning?',
+    a: 'No. This is a lexical pattern solver that matches letter structures against English dictionary words. It does not perform AI semantic searches on crossword trivia clues.',
+  },
+  {
+    q: 'Which dictionary mode should I choose for crosswords?',
+    a: 'Use "Common words" for standard newspaper crosswords (like Monday–Thursday puzzles) to filter out obscure terminology. Switch to "Full dictionary" for cryptic crosswords, specialized themes, or late-week puzzles.',
   },
 ];
 
@@ -507,7 +532,7 @@ export function CrosswordPage() {
             />
             <div className="grid gap-4">
               <Field id="cw-required" label="Must include letters" hint="Optional — letters that must appear somewhere.">
-                <input id="cw-required" className={inputClass} value={required}
+                <input id="cw-required" aria-describedby="cw-required-hint" className={inputClass} value={required}
                   onChange={(e) => setRequired(e.target.value.toLowerCase().replace(/[^a-z]/g, ''))} placeholder="e.g. n" />
               </Field>
               <Field id="cw-mode" label="Dictionary">

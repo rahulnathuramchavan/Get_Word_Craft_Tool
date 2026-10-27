@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useSearchParams } from 'react-router-dom';
 import {
@@ -21,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   ScrambleGuide, DefinitionGuide, WordListsGuide,
 } from '@/components/ToolGuides';
+import { fetchDefinition, normalizeWord, isValidWord } from '@/lib/definitionCache';
 
 const related = (path) => TOOLS.filter((t) => t.path !== path).slice(0, 4);
 
@@ -29,11 +30,19 @@ const related = (path) => TOOLS.filter((t) => t.path !== path).slice(0, 4);
 const SG_FAQS = [
   {
     q: 'What is a word scramble?',
-    a: 'A word scramble mixes the letters of a word into a new order — "planet" becomes "lptena" — and the solver works out the original word. Teachers use them for spelling practice and they are a party-game staple.',
+    a: 'A word scramble mixes the letters of a word into a new random order — for example, "planet" becomes "lptena" — challenging the solver to deduce the original word. Teachers use them for spelling drills and vocabulary practice.',
   },
   {
     q: 'Are the scrambled words real dictionary words?',
-    a: 'Yes. Every scramble starts from a common English word in our open word list, and the letters are shuffled until they differ from the original.',
+    a: 'Yes. Every puzzle is selected from our common English word list, and the letters are shuffled using the Fisher-Yates algorithm until they differ from the original solution.',
+  },
+  {
+    q: 'Can I scramble my own custom word list?',
+    a: 'Currently, the generator selects words by difficulty tier (Easy 4–5 letters, Medium 5–7 letters, Hard 7–9 letters) from curated common vocabulary. If you need to unscramble a custom puzzle, use our Word Unscrambler.',
+  },
+  {
+    q: 'How can I use these puzzles for classroom worksheets or party games?',
+    a: 'Click "Copy puzzle" to copy the scrambled letters directly to your clipboard. You can paste them into documents, print worksheets, or share them in group chat challenges.',
   },
 ];
 
@@ -159,11 +168,19 @@ export function ScramblePage() {
 const DF_FAQS = [
   {
     q: 'Where do definitions come from?',
-    a: 'Definitions are fetched live from the Free Dictionary API (dictionaryapi.dev), an open community-built dictionary. Word validity in our tools comes from the separate ENABLE word list, so a valid game word may occasionally lack a definition entry.',
+    a: 'Definitions are fetched live from the Free Dictionary API (dictionaryapi.dev) with automatic fallback to Datamuse, providing parts of speech, phonetic spellings, and usage examples.',
   },
   {
-    q: 'Why did my word return no definition?',
-    a: 'The open dictionary covers most everyday English but can miss very rare, archaic, or newly coined words. Try a different spelling or check the word in the Word Lists tool.',
+    q: 'Why do some valid Scrabble words return no definition?',
+    a: 'Specialized competitive word games allow short hook words (like AA, ZA, or QI) from historic or regional lexicons. While valid in our word finders, modern general-purpose definition APIs may occasionally lack entries for these obscure abbreviations or loanwords.',
+  },
+  {
+    q: 'Does Definition Finder include pronunciations?',
+    a: 'Yes. When audio clips and phonetic transcriptions are available from the open dictionary API, they are displayed alongside word meanings and parts of speech.',
+  },
+  {
+    q: 'How can I look up words directly from other tools?',
+    a: 'Every word chip across Word Finder, Word Unscrambler, Anagram Solver, and Word Lists is clickable. Tapping any chip navigates directly to Definition Finder with that word preloaded.',
   },
 ];
 
@@ -171,70 +188,26 @@ export function DefinitionPage() {
   const [searchParams] = useSearchParams();
   const [input, setInput] = useState(() => searchParams.get('word') || '');
   const [state, setState] = useState({ status: 'idle', entries: [], word: '' });
+  const activeRequestIdRef = useRef(0);
 
   const lookup = useCallback(async (word) => {
-    const clean = word.trim().toLowerCase().replace(/^[^a-z]+/, '').replace(/[^a-z\-']+$/, '');
-    if (!/^[a-z][a-z\-']*$/.test(clean)) {
+    const clean = normalizeWord(word);
+    if (!isValidWord(clean)) {
       setState({ status: 'invalid', entries: [], word: clean });
       return;
     }
+
+    const currentReqId = ++activeRequestIdRef.current;
     setState({ status: 'loading', entries: [], word: clean });
 
-    // Helper: fetch with an 8-second timeout
-    const fetchWithTimeout = (url, ms = 8000) => {
-      const controller = new AbortController();
-      const timer = window.setTimeout(() => controller.abort(), ms);
-      return fetch(url, { signal: controller.signal }).finally(() => window.clearTimeout(timer));
-    };
+    const result = await fetchDefinition(clean);
 
-    try {
-      let res;
-      try {
-        res = await fetchWithTimeout(
-          `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(clean)}`,
-        );
-      } catch {
-        // Primary API unreachable — try Datamuse as fallback
-        const fallback = await fetchWithTimeout(
-          `https://api.datamuse.com/words?sp=${encodeURIComponent(clean)}&md=d&max=1`,
-        );
-        if (!fallback.ok) throw new Error('fallback failed');
-        const fallbackData = await fallback.json();
-        if (!fallbackData.length || !fallbackData[0].defs?.length) {
-          setState({ status: 'empty', entries: [], word: clean });
-          return;
-        }
-        // Shape Datamuse response to match dictionaryapi format
-        const defs = fallbackData[0].defs.map((d) => {
-          const [pos, ...rest] = d.split('\t');
-          return { partOfSpeech: pos, definitions: [{ definition: rest.join(' ') }] };
-        });
-        setState({
-          status: 'ready',
-          entries: [{ word: clean, meanings: defs, phonetics: [] }],
-          word: clean,
-        });
-        return;
-      }
-
-      if (res.status === 404) {
-        setState({ status: 'empty', entries: [], word: clean });
-        return;
-      }
-      if (!res.ok) throw new Error(`API error ${res.status}`);
-      const data = await res.json();
-      setState({ status: 'ready', entries: Array.isArray(data) ? data : [], word: clean });
-    } catch (err) {
-      const isTimeout = err?.name === 'AbortError';
-      setState({
-        status: 'error',
-        entries: [],
-        word: clean,
-        errorMsg: isTimeout
-          ? 'The request timed out. Check your connection and try again.'
-          : 'The dictionary service could not be reached. Check your connection and try again.',
-      });
+    // Guard against race conditions: ignore if a newer search was initiated
+    if (activeRequestIdRef.current !== currentReqId) {
+      return;
     }
+
+    setState(result);
   }, []);
 
   useEffect(() => {
@@ -247,7 +220,7 @@ export function DefinitionPage() {
   return (
     <>
       <Helmet>
-        <title>Definition Finder — Meanings, Parts of Speech & Examples | WordCraft Tool</title>
+        <title>Definition Finder — Word Meanings & Examples | WordCraft Tool</title>
         <meta name="description" content="Look up any English word: meanings, parts of speech, example sentences, and synonyms from an open dictionary. Free and fast." />
         <link rel="canonical" href={`${SITE_URL}/definition-finder`} />
       </Helmet>
@@ -287,9 +260,23 @@ export function DefinitionPage() {
           </div>
 
           {state.status === 'idle' && (
-            <p className="rounded-xl border border-dashed border-border bg-background p-6 text-sm text-muted-foreground">
-              Type a word above and press Define. Tip: every word in our tool results links here automatically.
-            </p>
+            <div className="rounded-xl border border-dashed border-border bg-background p-6">
+              <p className="text-sm text-muted-foreground">
+                Type any English word above and press <strong>Define</strong>. You can also test instant lookups with these popular examples:
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {['serendipity', 'craft', 'lucid', 'ephemeral', 'quixotic'].map((sample) => (
+                  <button
+                    key={sample}
+                    type="button"
+                    onClick={() => { setInput(sample); lookup(sample); }}
+                    className="inline-flex min-h-[36px] sm:min-h-[40px] items-center rounded-md border border-border bg-card px-3 py-1.5 text-xs sm:text-sm font-medium text-foreground transition-colors hover:bg-secondary active:scale-95"
+                  >
+                    {sample}
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
           {state.status === 'invalid' && (
             <p role="alert" className="rounded-xl border border-destructive/40 bg-destructive/5 p-4 text-sm font-medium text-destructive">
@@ -310,9 +297,15 @@ export function DefinitionPage() {
             </div>
           )}
           {state.status === 'empty' && (
-            <p className="rounded-xl border border-dashed border-border bg-background p-6 text-sm text-muted-foreground" role="status">
-              No definition found for “{state.word}”. It may be very rare, newly coined, or spelled differently.
-            </p>
+            <div className="rounded-xl border border-dashed border-border bg-background p-6" role="status">
+              <p className="text-sm text-muted-foreground">
+                No definition found for “<span className="font-semibold text-foreground">{state.word}</span>”.
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                It may be an obscure tournament-only hook word (like <em>AA</em> or <em>QI</em>), newly coined slang, or misspelled.
+                You can browse verified game words by length in our <a href="/word-lists" className="text-primary underline hover:text-primary/80">Word Lists</a> or unscramble letters in the <a href="/word-unscrambler" className="text-primary underline hover:text-primary/80">Word Unscrambler</a>.
+              </p>
+            </div>
           )}
           {state.status === 'ready' && (
             <div className="grid gap-4">
@@ -365,6 +358,14 @@ const WL_FAQS = [
   {
     q: 'How are these lists generated and filtered?',
     a: 'Every list is computed live in your browser from our comprehensive 437,000+ word dictionary. You can search inside any list, filter by starting letter or vocabulary tier, sort alphabetically or by Scrabble score, and page through complete results.',
+  },
+  {
+    q: 'How are word tile scores calculated in the list?',
+    a: 'Scores reflect classic English tile values (e.g. A=1, D=2, B=3, F=4, K=5, J=8, Q=10, Z=10). You can sort any list by tile score to identify high-potential plays for your board games.',
+  },
+  {
+    q: 'Can I export words from these lists for offline practice?',
+    a: 'Yes. Use the "Copy page" button to copy the 60 words visible on the current page, or "Copy all" to copy the entire filtered collection to your clipboard for study notes or flashcards.',
   },
 ];
 
@@ -796,7 +797,7 @@ export function WordListsPage() {
                       type="button"
                       disabled={result.page <= 1}
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
-                      className="inline-flex h-8 items-center gap-1 rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-foreground hover:bg-secondary disabled:pointer-events-none disabled:opacity-40"
+                      className="inline-flex min-h-[38px] sm:min-h-[40px] items-center gap-1 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground hover:bg-secondary disabled:pointer-events-none disabled:opacity-40"
                       aria-label="Previous page"
                     >
                       <ChevronLeft className="h-4 w-4" aria-hidden="true" /> Previous
@@ -813,7 +814,7 @@ export function WordListsPage() {
                               key={p}
                               type="button"
                               onClick={() => setPage(p)}
-                              className={`inline-flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium transition-colors ${
+                              className={`inline-flex min-h-[38px] min-w-[38px] sm:min-h-[40px] sm:min-w-[40px] items-center justify-center rounded-lg text-xs font-medium transition-colors ${
                                 p === result.page
                                   ? 'bg-primary text-primary-foreground font-semibold'
                                   : 'border border-border bg-card text-foreground hover:bg-secondary'
@@ -831,7 +832,7 @@ export function WordListsPage() {
                       type="button"
                       disabled={result.page >= result.totalPages}
                       onClick={() => setPage((p) => Math.min(result.totalPages, p + 1))}
-                      className="inline-flex h-8 items-center gap-1 rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-foreground hover:bg-secondary disabled:pointer-events-none disabled:opacity-40"
+                      className="inline-flex min-h-[38px] sm:min-h-[40px] items-center gap-1 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground hover:bg-secondary disabled:pointer-events-none disabled:opacity-40"
                       aria-label="Next page"
                     >
                       Next <ChevronRight className="h-4 w-4" aria-hidden="true" />

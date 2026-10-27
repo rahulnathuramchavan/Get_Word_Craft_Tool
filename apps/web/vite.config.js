@@ -377,6 +377,7 @@ logger.error = (msg, options) => {
 }
 
 export default defineConfig({
+	publicDir: path.resolve(__dirname, './public'),
 	optimizeDeps: {
 		include: allDeps,
 	},

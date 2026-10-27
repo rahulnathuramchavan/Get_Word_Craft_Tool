@@ -36,7 +36,7 @@ export function webApplicationLd({ name, description, path }) {
     name,
     description,
     url: `${SITE_URL}${path}`,
-    applicationCategory: 'GameApplication',
+    applicationCategory: 'UtilitiesApplication',
     operatingSystem: 'Any',
     browserRequirements: 'Requires JavaScript',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },

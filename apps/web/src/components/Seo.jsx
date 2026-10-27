@@ -4,8 +4,12 @@ import { Helmet } from 'react-helmet';
 // Social + canonical tags only. The page's own <Helmet> must keep a literal
 // <title> and <meta name="description">, because the llms.txt build step reads
 // those two tags straight out of the page file's source.
-const Seo = ({ title, description, image, url, siteName, type = 'website' }) => {
-    const canonical = url || window.location.origin + window.location.pathname;
+// Default Open Graph image URL. Keep null until a verified 1200x630 raster asset
+// (e.g. /og-image.png) is created in public/ and deployed, to prevent emitting 404 image URLs.
+const DEFAULT_OG_IMAGE = null;
+
+const Seo = ({ title, description, image = DEFAULT_OG_IMAGE, url, siteName, type = 'website' }) => {
+    const canonical = url || (typeof window !== 'undefined' ? window.location.origin + window.location.pathname : '');
 
     return (
         <Helmet>
@@ -21,7 +25,7 @@ const Seo = ({ title, description, image, url, siteName, type = 'website' }) => 
             {image && <meta name="twitter:image" content={image} />}
         </Helmet>
     );
-}
+};
 
 export default Seo;
 

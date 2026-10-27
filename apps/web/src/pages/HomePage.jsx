@@ -13,7 +13,7 @@ import { FaqSection } from '@/components/ToolShell';
 import useDictionary from '@/hooks/useDictionary';
 import { findWords } from '@/lib/dictionary';
 import { TOOLS } from '@/lib/tools';
-import { ARTICLES } from '@/pages/LearnPage';
+import { ARTICLES } from '@/lib/articles';
 import {
   SITE_URL, SITE_NAME, websiteLd, organizationLd, webPageLd, faqLd,
 } from '@/lib/seo';
@@ -42,7 +42,7 @@ const HOME_FAQS = [
 ];
 
 function QuickFinder() {
-  const { status, dict, error, retry } = useDictionary();
+  const { status, dict, error, retry, load } = useDictionary({ lazy: true });
   const [letters, setLetters] = useState('');
   const [query, setQuery] = useState(null);
   const [formError, setFormError] = useState('');
@@ -58,6 +58,9 @@ function QuickFinder() {
       return;
     }
     setFormError('');
+    if (!dict && status !== 'loading') {
+      load();
+    }
     setQuery(letters);
   };
 
@@ -134,8 +137,6 @@ const HERO_TILES = [
 ];
 
 export default function HomePage() {
-  const { dict } = useDictionary();
-
   return (
     <>
       <Helmet>
@@ -300,7 +301,7 @@ export default function HomePage() {
             <div>
               <dt className="text-sm font-medium text-background/70">Words in the dictionary</dt>
               <dd className="mt-1 font-display text-4xl font-semibold text-primary">
-                <CountUp value={dict ? dict.size : 437673} suffix="+" />
+                <CountUp value={437673} suffix="+" />
               </dd>
             </div>
             <div>

@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { loadDictionary } from '@/lib/dictionary';
 
-export default function useDictionary() {
-  const [state, setState] = useState({ status: 'loading', dict: null, error: '' });
+export default function useDictionary({ lazy = false } = {}) {
+  const [state, setState] = useState(() => ({
+    status: lazy ? 'idle' : 'loading',
+    dict: null,
+    error: '',
+  }));
 
   const start = useCallback(() => {
     setState({ status: 'loading', dict: null, error: '' });
@@ -21,7 +25,10 @@ export default function useDictionary() {
     return () => { alive = false; };
   }, []);
 
-  useEffect(() => start(), [start]);
+  useEffect(() => {
+    if (!lazy) return start();
+  }, [lazy, start]);
 
-  return { ...state, retry: start };
+  return { ...state, retry: start, load: start };
 }
+

@@ -226,22 +226,22 @@ export function WordleGuide() {
       </GuideSection>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <GuideSubsection title="Green (Correct)">
+        <GuideSubsection title="Green (Correct Spot)">
           <p>
             The letter is in the secret word and in the <strong>exact position</strong>.
-            Shortcut: Press <kbd className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">G</kbd> on any focused cell.
+            Click the cell or press <kbd className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">Enter</kbd> / <kbd className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">Space</kbd> until the tile turns green.
           </p>
         </GuideSubsection>
-        <GuideSubsection title="Amber / Yellow (Misplaced)">
+        <GuideSubsection title="Amber / Yellow (Wrong Spot)">
           <p>
             The letter is in the secret word, but <strong>not in this position</strong>.
-            Shortcut: Press <kbd className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">Y</kbd>.
+            Cycle the tile color by clicking or pressing <kbd className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">Space</kbd>.
           </p>
         </GuideSubsection>
-        <GuideSubsection title="Gray (Excluded)">
+        <GuideSubsection title="Gray (Not in Word)">
           <p>
             The letter <strong>does not appear</strong> in the word (or does not appear additional times).
-            Shortcut: Press <kbd className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">X</kbd>.
+            Cycle the tile color until it turns gray.
           </p>
         </GuideSubsection>
       </div>
@@ -258,8 +258,8 @@ export function WordleGuide() {
       <GuideSection title="Step-by-Step Testable Example">
         <ol className="list-inside list-decimal space-y-1.5">
           <li>Enter a strong opener like <code>CRANE</code> in Row 1.</li>
-          <li>Suppose <em>C</em>, <em>A</em>, and <em>E</em> turn gray, <em>R</em> turns yellow at slot 2, and <em>N</em> turns green at slot 4.</li>
-          <li>Cycle the tile colors by clicking or using keyboard keys.</li>
+          <li>Suppose <em>C</em>, <em>A</em>, and <em>E</em> turn gray, <em>R</em> turns amber at slot 2, and <em>N</em> turns green at slot 4.</li>
+          <li>Cycle the tile colors by clicking each cell or pressing Space while navigating with arrow keys.</li>
           <li>
             The helper instantly filters down to words with <em>N</em> at index 4, containing <em>R</em> anywhere except index 2,
             and omitting <em>C</em>, <em>A</em>, and <em>E</em> (e.g. <em>IRONY</em>, <em>WRONG</em>, <em>DRINK</em>).
@@ -293,7 +293,7 @@ export function CrosswordGuide() {
       <div className="grid gap-4 sm:grid-cols-2">
         <GuideSubsection title="Pattern Formatting">
           <p>
-            Type known letters and put a question mark (<code>?</code>) for each blank square.
+            Type known letters and put a question mark (<code>?</code>) or dot (<code>.</code>) for each blank square.
             For example, <code>c?t?r</code> represents a 5-letter word with <em>C</em> at position 1, <em>T</em> at position 3,
             and <em>R</em> at position 5.
           </p>
@@ -344,23 +344,23 @@ export function ScrambleGuide() {
       </GuideSection>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <GuideSubsection title="Short (4–5 Letters)">
+        <GuideSubsection title="Easy (4–5 Letters)">
           <p>Ideal for beginners, young learners, and quick warm-up spelling drills (e.g. <em>TRAIN</em>, <em>PLANT</em>).</p>
         </GuideSubsection>
         <GuideSubsection title="Medium (5–7 Letters)">
           <p>Balanced challenge for game nights and intermediate vocabulary practice (e.g. <em>PLANET</em>, <em>CASTLE</em>).</p>
         </GuideSubsection>
-        <GuideSubsection title="Long (7–9 Letters)">
+        <GuideSubsection title="Hard (7–9 Letters)">
           <p>Challenging scrambles for experienced word puzzle enthusiasts (e.g. <em>PICTURE</em>, <em>BUILDING</em>).</p>
         </GuideSubsection>
       </div>
 
       <GuideSection title="How to Practice & Play">
         <ol className="list-inside list-decimal space-y-1.5">
-          <li>Choose your difficulty level using the dropdown selector.</li>
-          <li>Click <strong>Roll new word</strong> to generate a scrambled letter set.</li>
+          <li>Choose your difficulty level (Easy, Medium, or Hard) using the dropdown selector.</li>
+          <li>Click <strong>New scramble</strong> to generate a scrambled letter set.</li>
           <li>Try to solve the puzzle in your head or jot down possible letter combinations on paper.</li>
-          <li>Toggle <strong>Show solution</strong> to reveal the answer and verify your guess.</li>
+          <li>Click <strong>Reveal answer</strong> to verify your solution (or click <strong>Hide answer</strong> to try again).</li>
           <li>Click <strong>Copy puzzle</strong> to copy the challenge text formatted for sharing or messaging.</li>
         </ol>
       </GuideSection>

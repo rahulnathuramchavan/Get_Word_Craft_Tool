@@ -29,20 +29,24 @@ const emptyGrid = () => Array.from({ length: 6 }, () => (
 
 const FAQS = [
   {
-    q: 'How do I use the Wordle Helper grid?',
-    a: 'Type a guess into a row, then click each tile (or press Enter while it is focused) to cycle its color: gray for letters not in the word, amber for letters in the word but in the wrong spot, and green for letters in the correct spot. The suggestion list updates with every change.',
+    q: 'How do I enter guesses and change tile colors?',
+    a: 'Type letters into a row to fill the 5 cells, then click any tile (or press Enter/Space while focused) to cycle its color: gray for letters not in the word, amber for letters in the wrong position, and green for letters in the exact spot. The suggestions list updates instantly.',
   },
   {
-    q: 'Is the grid keyboard accessible?',
-    a: 'Yes. Tab to the grid, type letters to fill cells, use the arrow keys to move between cells, Backspace to clear, and Enter or Space to change a tile\'s color. Every tile announces its row, column, letter, and color to screen readers.',
+    q: 'Can I navigate the grid using only a keyboard?',
+    a: 'Yes. Tab to focus the grid, type letters to fill tiles, use Arrow keys to move between cells, Backspace to delete, and Space or Enter to cycle tile colors. Each tile announces its row, column, letter, and color to assistive technologies.',
   },
   {
-    q: 'How does the helper handle duplicate letters?',
-    a: 'A gray tile only excludes a letter if that letter is not also marked green or amber somewhere else. This mirrors how the game treats repeated letters, though very rare edge cases can still need a human eye.',
+    q: 'How does the helper evaluate repeated letters?',
+    a: 'A gray tile only excludes a letter if that letter is not also marked green or amber elsewhere in your guesses. For example, if you guess SPEED and one E is green while the other is gray, the helper knows the answer has exactly one E and filters out double-E words.',
   },
   {
-    q: 'Is this an AI solver?',
-    a: 'No. The helper filters a fixed, open word list against the clues you enter — straightforward pattern matching, not machine learning. The final guess is always yours.',
+    q: 'Does this tool guarantee finding today\'s official Wordle answer?',
+    a: 'No. The helper searches all valid 5-letter English words matching your clues. Because The New York Times curates a smaller subset of common everyday words for its daily answer, we recommend choosing familiar words from the suggestions.',
+  },
+  {
+    q: 'What should I do if the helper says "Nothing matches those clues"?',
+    a: 'A zero-match result almost always means conflicting tile colors were entered — such as marking a letter gray in one row but green in another, or marking all five spots as invalid for a letter. Review your rows and click any conflicting tile to fix its color.',
   },
 ];
 
@@ -140,7 +144,7 @@ export default function WordlePage() {
                         data-col={c}
                         aria-label={`Guess ${r + 1}, letter ${c + 1}: ${cell.letter ? cell.letter.toUpperCase() : 'empty'}, ${STATE_LABELS[cell.state]}. Press Enter to change color.`}
                         className={cn(
-                          'flex h-12 w-12 items-center justify-center rounded-md border-2 text-xl font-bold uppercase shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background sm:h-14 sm:w-14',
+                          'flex h-12 w-12 items-center justify-center rounded-md border-2 text-xl font-bold uppercase shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:h-14 sm:w-14',
                           CELL_STYLES[cell.state],
                         )}
                       >
