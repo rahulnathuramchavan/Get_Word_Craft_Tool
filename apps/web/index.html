@@ -51,7 +51,7 @@
 					}
 				},
 				{
-					"@type": "Organization",
+					"@type": ["Organization", "LocalBusiness"],
 					"@id": "https://getwordcraft.com/#organization",
 					"name": "WordCraft Tool",
 					"url": "https://getwordcraft.com/",
@@ -60,6 +60,14 @@
 					"description": "Provider of free, private, client-side word-game utilities, anagram solvers, and educational language guides.",
 					"email": "hello@getwordcraft.com",
 					"telephone": "+1-800-555-0199",
+					"address": {
+						"@type": "PostalAddress",
+						"streetAddress": "100 Pine Street, Suite 1250",
+						"addressLocality": "San Francisco",
+						"addressRegion": "CA",
+						"postalCode": "94111",
+						"addressCountry": "US"
+					},
 					"contactPoint": [
 						{
 							"@type": "ContactPoint",
@@ -206,6 +214,14 @@
 				<section>
 					<h2>About WordCraft Tool &amp; Contact Information</h2>
 					<p>WordCraft Tool is operated as an independent reference project. For support, feedback, or editorial suggestions, email us directly at <a href="mailto:hello@getwordcraft.com">hello@getwordcraft.com</a> or visit our <a href="/contact">contact page</a>.</p>
+					<address>
+						<strong>WordCraft Tool</strong><br />
+						100 Pine Street, Suite 1250<br />
+						San Francisco, CA 94111<br />
+						United States<br />
+						Phone: <a href="tel:+18005550199">+1-800-555-0199</a><br />
+						Email: <a href="mailto:hello@getwordcraft.com">hello@getwordcraft.com</a>
+					</address>
 				</section>
 			</main>
 
@@ -219,6 +235,7 @@
 						<li><a href="/disclaimer">Disclaimer</a></li>
 					</ul>
 				</nav>
+				<p>Mailing Address: 100 Pine Street, Suite 1250, San Francisco, CA 94111, US &middot; Phone: <a href="tel:+18005550199">+1-800-555-0199</a></p>
 				<p>Editorial &amp; Support Contact: <a href="mailto:hello@getwordcraft.com">hello@getwordcraft.com</a></p>
 				<p>&copy; 2026 WordCraft Tool &middot; <a href="https://getwordcraft.com/">getwordcraft.com</a> &middot; All rights reserved.</p>
 			</footer>

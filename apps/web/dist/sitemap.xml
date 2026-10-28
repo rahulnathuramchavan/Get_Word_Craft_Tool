@@ -4,7 +4,7 @@
   <!-- Core pages -->
   <url>
     <loc>https://getwordcraft.com/</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -12,49 +12,49 @@
   <!-- Tool pages -->
   <url>
     <loc>https://getwordcraft.com/word-finder</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://getwordcraft.com/word-unscrambler</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://getwordcraft.com/anagram-solver</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://getwordcraft.com/wordle-helper</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://getwordcraft.com/crossword-finder</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://getwordcraft.com/scramble-generator</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://getwordcraft.com/definition-finder</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://getwordcraft.com/word-lists</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -62,7 +62,7 @@
   <!-- Educational hub -->
   <url>
     <loc>https://getwordcraft.com/learn</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -70,37 +70,37 @@
   <!-- Educational articles -->
   <url>
     <loc>https://getwordcraft.com/learn/unscramble-words-faster</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://getwordcraft.com/learn/wordle-opening-strategy</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://getwordcraft.com/learn/two-letter-words</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://getwordcraft.com/learn/wildcards-and-patterns</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://getwordcraft.com/learn/best-word-in-scrabble</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://getwordcraft.com/learn/how-to-solve-crossword-clues</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -108,31 +108,31 @@
   <!-- Company & trust pages -->
   <url>
     <loc>https://getwordcraft.com/about</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://getwordcraft.com/contact</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://getwordcraft.com/privacy</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://getwordcraft.com/terms</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://getwordcraft.com/disclaimer</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-10-28T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

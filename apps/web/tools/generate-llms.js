@@ -27,7 +27,7 @@ const LLMS_TXT_CONTENT = `# WordCraft Tool
 
 ## Company, Trust & Contact
 - [About WordCraft Tool](https://getwordcraft.com/about): Mission, technology stack, and dictionary data sources.
-- [Contact](https://getwordcraft.com/contact): Inquiries and feedback via hello@getwordcraft.com.
+- [Contact](https://getwordcraft.com/contact): Inquiries via hello@getwordcraft.com or +1-800-555-0199 (100 Pine Street, Suite 1250, San Francisco, CA 94111, US).
 - [Privacy Policy](https://getwordcraft.com/privacy): Details on client-side search execution and zero personal data collection.
 - [Terms of Service](https://getwordcraft.com/terms): Terms governing use of WordCraft Tool.
 - [Disclaimer](https://getwordcraft.com/disclaimer): Educational and utility disclaimer regarding independent trademarks.

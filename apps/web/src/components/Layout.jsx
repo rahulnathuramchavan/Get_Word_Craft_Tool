@@ -186,6 +186,14 @@ export default function Layout({ children }) {
                   hello@getwordcraft.com
                 </a>
               </p>
+              <address className="mt-2 text-xs not-italic leading-relaxed text-muted-foreground">
+                100 Pine Street, Suite 1250<br />
+                San Francisco, CA 94111, US<br />
+                Tel:{' '}
+                <a href="tel:+18005550199" className="hover:text-foreground">
+                  +1-800-555-0199
+                </a>
+              </address>
             </div>
             <nav aria-label="Tools">
               <p className="text-sm font-semibold text-foreground">Tools</p>

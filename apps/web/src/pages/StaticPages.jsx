@@ -4,7 +4,7 @@ import { Mail } from 'lucide-react';
 import Seo from '@/components/Seo';
 import JsonLd from '@/components/JsonLd';
 import { Breadcrumbs } from '@/components/ToolShell';
-import { SITE_URL, SITE_NAME, webPageLd, breadcrumbLd } from '@/lib/seo';
+import { SITE_URL, SITE_NAME, webPageLd, breadcrumbLd, organizationLd } from '@/lib/seo';
 
 const PAGES = {
   about: {
@@ -165,6 +165,16 @@ const PAGES = {
               'Have an idea for a new word list category, a puzzle drill feature, or a strategy article topic? We welcome ideas that make word games more fun, accessible, and educational.',
             ],
           },
+        ],
+      },
+      {
+        h: 'Mailing Address & Phone',
+        p: [
+          'WordCraft Tool',
+          '100 Pine Street, Suite 1250',
+          'San Francisco, CA 94111, United States',
+          'Telephone: +1-800-555-0199',
+          'Support Email: hello@getwordcraft.com',
         ],
       },
       {
@@ -408,6 +418,7 @@ function StaticPage({ pageKey }) {
       <JsonLd data={[
         webPageLd({ title: page.title, description: page.description, path: page.path }),
         breadcrumbLd([{ name: 'Home', path: '/' }, { name: page.title, path: page.path }]),
+        ...(pageKey === 'contact' || pageKey === 'about' ? [organizationLd] : []),
       ]} />
       <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-12">
         <Breadcrumbs items={[{ label: 'Home', to: '/' }, { label: page.title }]} />

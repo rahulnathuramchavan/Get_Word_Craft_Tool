@@ -3,7 +3,7 @@ export const SITE_NAME = 'WordCraft Tool';
 
 export const organizationLd = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
+  '@type': ['Organization', 'LocalBusiness'],
   '@id': `${SITE_URL}/#organization`,
   name: SITE_NAME,
   url: SITE_URL,
@@ -12,6 +12,14 @@ export const organizationLd = {
   description: 'A free, fast toolkit of word finders, unscramblers, and puzzle helpers.',
   email: 'hello@getwordcraft.com',
   telephone: '+1-800-555-0199',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '100 Pine Street, Suite 1250',
+    addressLocality: 'San Francisco',
+    addressRegion: 'CA',
+    postalCode: '94111',
+    addressCountry: 'US',
+  },
   contactPoint: [
     {
       '@type': 'ContactPoint',
