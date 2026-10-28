@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Not Found (404) — WordCraft Tool</title>
+    <meta name="robots" content="noindex, follow" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" />
+    <style>
+      :root {
+        --background: #f8fafc;
+        --card: #ffffff;
+        --foreground: #0f172a;
+        --muted: #64748b;
+        --primary: #0284c7;
+        --primary-fg: #ffffff;
+        --border: #e2e8f0;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+        background-color: var(--background);
+        color: var(--foreground);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      header, footer {
+        border-color: var(--border);
+        padding: 1.25rem 1.5rem;
+      }
+      header {
+        border-bottom: 1px solid var(--border);
+        background: var(--card);
+      }
+      .container {
+        max-width: 56rem;
+        margin: 0 auto;
+        padding: 0 1rem;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.625rem;
+        text-decoration: none;
+        color: var(--foreground);
+        font-family: 'Fraunces', serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+      }
+      .brand-badge {
+        width: 2.25rem;
+        height: 2.25rem;
+        background: var(--primary);
+        color: var(--primary-fg);
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.125rem;
+      }
+      main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 1rem;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 3rem 2rem;
+        max-width: 38rem;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      }
+      .status-pill {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        background: #fee2e2;
+        color: #b91c1c;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-family: 'Fraunces', serif;
+        font-size: 2.25rem;
+        margin: 0 0 1rem 0;
+        line-height: 1.2;
+      }
+      p {
+        color: var(--muted);
+        line-height: 1.6;
+        margin: 0 0 2rem 0;
+        font-size: 1rem;
+      }
+      .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+        margin-bottom: 2rem;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.15s ease;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: var(--primary-fg);
+      }
+      .btn-primary:hover {
+        opacity: 0.95;
+      }
+      .btn-secondary {
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--foreground);
+      }
+      .btn-secondary:hover {
+        background: var(--background);
+      }
+      .links-grid {
+        border-top: 1px solid var(--border);
+        padding-top: 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.75rem;
+        text-align: left;
+      }
+      .links-grid a {
+        font-size: 0.8125rem;
+        color: var(--muted);
+        text-decoration: none;
+      }
+      .links-grid a:hover {
+        color: var(--primary);
+      }
+      footer {
+        border-top: 1px solid var(--border);
+        font-size: 0.8125rem;
+        color: var(--muted);
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <a href="/" class="brand">
+          <span class="brand-badge">W</span>
+          <span>WordCraft Tool</span>
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <div class="card">
+        <span class="status-pill">HTTP 404 · Not Found</span>
+        <h1>Page Not Found</h1>
+        <p>The URL you requested does not exist on WordCraft Tool. It may have been moved, renamed, or typed incorrectly.</p>
+
+        <div class="button-group">
+          <a href="/" class="btn btn-primary">Go to Homepage</a>
+          <a href="/word-finder" class="btn btn-secondary">Open Word Finder</a>
+          <a href="/learn" class="btn btn-secondary">Browse Learn Hub</a>
+        </div>
+
+        <div class="links-grid">
+          <a href="/word-unscrambler">Word Unscrambler</a>
+          <a href="/anagram-solver">Anagram Solver</a>
+          <a href="/wordle-helper">Wordle Helper</a>
+          <a href="/crossword-finder">Crossword Finder</a>
+          <a href="/definition-finder">Definition Finder</a>
+          <a href="/word-lists">Word Lists</a>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact Support</a>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>&copy; 2026 WordCraft Tool &middot; <a href="https://getwordcraft.com/" style="color: inherit;">getwordcraft.com</a> &middot; All rights reserved.</p>
+      </div>
+    </footer>
+  </body>
+</html>

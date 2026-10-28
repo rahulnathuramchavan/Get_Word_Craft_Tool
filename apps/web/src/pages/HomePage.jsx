@@ -15,7 +15,7 @@ import { findWords } from '@/lib/dictionary';
 import { TOOLS } from '@/lib/tools';
 import { ARTICLES } from '@/lib/articles';
 import {
-  SITE_URL, SITE_NAME, websiteLd, organizationLd, webPageLd, faqLd,
+  SITE_URL, SITE_NAME, websiteLd, organizationLd, webPageLd, webApplicationLd, faqLd,
 } from '@/lib/seo';
 
 const HOME_FAQS = [
@@ -65,7 +65,15 @@ function QuickFinder() {
   };
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 shadow-lg shadow-primary/5 sm:p-6">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        search();
+      }}
+      toolname="word_finder"
+      tooldescription="Find tournament-valid English words from a rack of letters with wildcard (?) support"
+      className="rounded-2xl border border-border bg-card p-4 shadow-lg shadow-primary/5 sm:p-6"
+    >
       <TileInput
         id="hero-letters"
         label="Your letters"
@@ -78,8 +86,7 @@ function QuickFinder() {
       />
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <button
-          type="button"
-          onClick={search}
+          type="submit"
           className="inline-flex h-12 items-center gap-2 rounded-lg bg-primary px-6 text-base font-semibold text-primary-foreground shadow-sm transition-all hover:brightness-105 active:scale-[0.98]"
         >
           Find words <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -125,7 +132,7 @@ function QuickFinder() {
           )}
         </div>
       )}
-    </div>
+    </form>
   );
 }
 
@@ -156,6 +163,11 @@ export default function HomePage() {
       <JsonLd data={[
         websiteLd,
         organizationLd,
+        webApplicationLd({
+          name: 'WordCraft Tool',
+          description: 'Free word-game toolkit: word finder, unscrambler, anagram solver, Wordle helper, crossword finder, definitions, and word lists.',
+          path: '/',
+        }),
         webPageLd({
           title: 'WordCraft Tool — Find Better Words, Solve Puzzles Faster',
           description: 'Free word-game toolkit with a word finder, unscrambler, anagram solver, Wordle helper, crossword finder, definitions, and word lists.',
@@ -327,9 +339,9 @@ export default function HomePage() {
               colors on every page.
             </li>
             <li className="rounded-xl border border-background/15 p-4">
-              <strong className="block text-background">Honest advertising.</strong>
-              Ad spaces are clearly labeled and reserve their height up front, so the page never
-              jumps while you read.
+              <strong className="block text-background">Client-side privacy.</strong>
+              Searches run locally in your browser memory. Your entered letters, patterns, and
+              puzzle guesses are never tracked or saved to our servers.
             </li>
           </ul>
         </div>

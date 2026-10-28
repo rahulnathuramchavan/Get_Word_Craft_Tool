@@ -125,6 +125,10 @@ export function WordFinderPage() {
       setFormError('Enter letters, a pattern, or at least one filter before searching.');
       return;
     }
+    if (form.min !== 'any' && form.max !== 'any' && Number(form.min) > Number(form.max)) {
+      setFormError('Minimum length cannot be greater than maximum length.');
+      return;
+    }
     setFormError('');
     setQuery({ ...form, sort: query?.sort || 'length-desc' });
   };
@@ -260,8 +264,10 @@ const WU_FAQS = [
 
 export function UnscramblerPage() {
   const { status, dict, error, retry } = useDictionary();
-  const [letters, setLetters] = useState('');
-  const [query, setQuery] = useState(null);
+  const [searchParams] = useSearchParams();
+  const initialLetters = (searchParams.get('letters') || searchParams.get('word') || '').toLowerCase().replace(/[^a-z?]/g, '');
+  const [letters, setLetters] = useState(initialLetters);
+  const [query, setQuery] = useState(() => (initialLetters.length >= 2 ? initialLetters : null));
   const [formError, setFormError] = useState('');
   const [copied, setCopied] = useState(false);
 
@@ -351,7 +357,7 @@ export function UnscramblerPage() {
                     {len}-letter words ({words.length})
                   </h2>
                   <ul className="mt-2 flex flex-wrap gap-2">
-                    {words.map((w) => <li key={w}><WordChip word={w} showScore={false} /></li>)}
+                    {words.map((w) => <li key={w}><WordChip word={w} showScore /></li>)}
                   </ul>
                 </section>
               ))}
@@ -393,8 +399,10 @@ const AN_FAQS = [
 
 export function AnagramPage() {
   const { status, dict, error, retry } = useDictionary();
-  const [input, setInput] = useState('');
-  const [query, setQuery] = useState(null);
+  const [searchParams] = useSearchParams();
+  const initialWord = (searchParams.get('word') || searchParams.get('letters') || '').toLowerCase().replace(/[^a-z?]/g, '');
+  const [input, setInput] = useState(initialWord);
+  const [query, setQuery] = useState(() => (initialWord.replace(/\?/g, '').length >= 2 ? initialWord : null));
   const [formError, setFormError] = useState('');
 
   const results = useMemo(
@@ -480,10 +488,13 @@ const CW_FAQS = [
 
 export function CrosswordPage() {
   const { status, dict, error, retry } = useDictionary();
-  const [pattern, setPattern] = useState('');
-  const [required, setRequired] = useState('');
+  const [searchParams] = useSearchParams();
+  const initialPattern = (searchParams.get('pattern') || '').toLowerCase().replace(/[^a-z?.]/g, '');
+  const initialRequired = (searchParams.get('required') || '').toLowerCase().replace(/[^a-z]/g, '');
+  const [pattern, setPattern] = useState(initialPattern);
+  const [required, setRequired] = useState(initialRequired);
   const [mode, setMode] = useState('all');
-  const [query, setQuery] = useState(null);
+  const [query, setQuery] = useState(() => (initialPattern.length >= 2 ? { pattern: initialPattern, required: initialRequired, mode: 'all', sort: 'alpha' } : null));
   const [formError, setFormError] = useState('');
 
   const result = useMemo(

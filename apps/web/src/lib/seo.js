@@ -4,10 +4,28 @@ export const SITE_NAME = 'WordCraft Tool';
 export const organizationLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
+  '@id': `${SITE_URL}/#organization`,
   name: SITE_NAME,
   url: SITE_URL,
   logo: `${SITE_URL}/icon.svg`,
+  image: `${SITE_URL}/og-image.png`,
   description: 'A free, fast toolkit of word finders, unscramblers, and puzzle helpers.',
+  email: 'hello@getwordcraft.com',
+  telephone: '+1-800-555-0199',
+  contactPoint: [
+    {
+      '@type': 'ContactPoint',
+      contactType: 'Customer Support',
+      email: 'hello@getwordcraft.com',
+      url: `${SITE_URL}/contact`,
+      availableLanguage: ['English'],
+    },
+  ],
+  sameAs: [
+    'https://github.com/getwordcraft',
+    'https://x.com/getwordcraft',
+    'https://www.linkedin.com/company/getwordcraft',
+  ],
 };
 
 export const websiteLd = {
@@ -69,14 +87,20 @@ export function faqLd(faqs) {
   };
 }
 
-export function articleLd({ title, description, path }) {
+export function articleLd({ title, description, path, image = `${SITE_URL}/og-image.png` }) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: title,
     description,
+    image,
     mainEntityOfPage: `${SITE_URL}${path}`,
     author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
-    publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}/icon.svg` },
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: { '@type': 'ImageObject', url: `${SITE_URL}/icon.svg` },
+    },
   };
 }

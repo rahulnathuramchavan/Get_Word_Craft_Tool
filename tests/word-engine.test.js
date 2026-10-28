@@ -15,6 +15,7 @@ import {
   randomWord,
   getCategoryWords,
   browseWordList,
+  resolveAudioUrl,
 } from '../apps/web/src/lib/dictionary-engine.js';
 
 // Reusable mock dictionary for fast, deterministic unit testing
@@ -133,6 +134,21 @@ describe('Word Finder & Crossword Engine (findWords)', () => {
     assert.deepEqual(res.results, ['cater']);
   });
 
+  it('Supports dot "." syntax in patterns as equivalent to question marks', () => {
+    // Crossword dot pattern "c.t.r" matches both "cater" and "cuter"
+    const resDot = findWords(mockDict, { pattern: 'c.t.r' });
+    const resWild = findWords(mockDict, { pattern: 'c?t?r' });
+    assert.deepEqual(resDot.results, resWild.results);
+    assert.deepEqual(resDot.results, ['cater', 'cuter']);
+  });
+
+  it('Ensures fixed board letters are not deducted from rack tiles', () => {
+    // Board has "c" at pos 0 and "t" at pos 2 ("c?t??").
+    // Rack has "aer" — exactly the missing tiles. It should NOT require "c" or "t" in the rack.
+    const res = findWords(mockDict, { letters: 'aer', pattern: 'c?t??' });
+    assert.deepEqual(res.results, ['cater']);
+  });
+
   it('Filters words by prefix and suffix constraints', () => {
     const resPre = findWords(mockDict, { startsWith: 'ca' });
     assert.ok(resPre.results.every((w) => w.startsWith('ca')));
@@ -179,6 +195,79 @@ describe('Scramble Generator (scrambleWord)', () => {
     assert.equal(scrambleWord(''), '');
     assert.equal(scrambleWord('a'), 'a');
     assert.equal(scrambleWord('eee'), 'eee');
+  });
+
+  it('Guarantees a non-identical permutation for words with at least two distinct letters', () => {
+    for (let i = 0; i < 50; i++) {
+      const scrambled = scrambleWord('planet');
+      assert.notEqual(scrambled, 'planet', 'scramble must never equal original word');
+      assert.equal([...scrambled].sort().join(''), 'aelnpt');
+    }
+    // Test short 2-letter word
+    for (let i = 0; i < 20; i++) {
+      assert.equal(scrambleWord('to'), 'ot');
+    }
+    // Test word with repeated letters
+    for (let i = 0; i < 20; i++) {
+      const res = scrambleWord('aba');
+      assert.notEqual(res, 'aba');
+      assert.ok(res === 'aab' || res === 'baa');
+    }
+  });
+
+  it('Strictly preserves the exact character multiset of the input', () => {
+    const testWords = ['racecar', 'encyclopedia', 'balloon', 'mississippi', 'strength'];
+    for (const w of testWords) {
+      for (let trial = 0; trial < 10; trial++) {
+        const res = scrambleWord(w);
+        assert.equal(res.length, w.length);
+        assert.notEqual(res, w);
+        assert.equal([...res].sort().join(''), [...w].sort().join(''));
+      }
+    }
+  });
+});
+
+describe('Definition Finder Audio Resolution (resolveAudioUrl)', () => {
+  it('Resolves valid absolute https and http URLs', () => {
+    const phonetics = [
+      { text: '/həˈloʊ/' },
+      { text: '/hɛˈloʊ/', audio: 'https://api.dictionaryapi.dev/media/pronunciations/en/hello-au.mp3' },
+    ];
+    assert.equal(resolveAudioUrl(phonetics), 'https://api.dictionaryapi.dev/media/pronunciations/en/hello-au.mp3');
+
+    const httpPhonetics = [{ audio: 'http://example.com/audio.mp3' }];
+    assert.equal(resolveAudioUrl(httpPhonetics), 'http://example.com/audio.mp3');
+  });
+
+  it('Normalizes protocol-relative URLs starting with // to https:', () => {
+    const phonetics = [
+      { audio: '//ssl.gstatic.com/dictionary/static/sounds/20200429/hello--_gb_1.mp3' },
+    ];
+    assert.equal(
+      resolveAudioUrl(phonetics),
+      'https://ssl.gstatic.com/dictionary/static/sounds/20200429/hello--_gb_1.mp3'
+    );
+  });
+
+  it('Rejects malformed, relative, or non-http audio paths and returns null', () => {
+    assert.equal(resolveAudioUrl([{ audio: 'relative-audio.mp3' }]), null);
+    assert.equal(resolveAudioUrl([{ audio: '/media/audio.mp3' }]), null);
+    assert.equal(resolveAudioUrl([{ audio: 'ftp://example.com/audio.mp3' }]), null);
+    assert.equal(resolveAudioUrl([{ audio: '   ' }]), null);
+    assert.equal(resolveAudioUrl([{ audio: '' }]), null);
+  });
+
+  it('Safely handles missing, non-array, and null array entries without throwing', () => {
+    assert.equal(resolveAudioUrl(null), null);
+    assert.equal(resolveAudioUrl(undefined), null);
+    assert.equal(resolveAudioUrl({}), null);
+    assert.equal(resolveAudioUrl([]), null);
+    assert.equal(resolveAudioUrl([null, undefined, { audio: '' }]), null);
+    assert.equal(
+      resolveAudioUrl([null, { audio: 'https://example.com/good.mp3' }]),
+      'https://example.com/good.mp3'
+    );
   });
 });
 

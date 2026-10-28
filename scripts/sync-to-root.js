@@ -16,8 +16,8 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const ROOT   = resolve(__dirname, '..');
 const DIST   = join(ROOT, 'apps', 'web', 'dist');
 
-const files = ['index.html', '.htaccess', 'icon.svg', 'robots.txt', 'sitemap.xml'];
-const dirs  = ['assets'];
+const files = ['index.html', '.htaccess', 'icon.svg', 'robots.txt', 'sitemap.xml', 'og-image.png', 'ads.txt', '404.html', 'llms.txt', 'index.md'];
+const dirs  = ['assets', '.well-known'];
 
 const PUBLIC = join(ROOT, 'apps', 'web', 'public');
 

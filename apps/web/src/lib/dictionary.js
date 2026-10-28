@@ -22,6 +22,7 @@ import {
   scrambleWord,
   getCategoryWords,
   browseWordList,
+  resolveAudioUrl,
 } from './dictionary-engine';
 
 export {
@@ -42,6 +43,7 @@ export {
   scrambleWord,
   getCategoryWords,
   browseWordList,
+  resolveAudioUrl,
 };
 
 let dictPromise = null;

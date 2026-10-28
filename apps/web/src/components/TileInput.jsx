@@ -44,9 +44,11 @@ export default function TileInput({
   id, label, hint, value, onChange, error, placeholder,
   maxLength = 15, allowWildcard = true, showRack = true, onEnter,
 }) {
-  const pattern = allowWildcard ? /[^a-z?]/g : /[^a-z]/g;
+  const pattern = allowWildcard ? /[^a-z?.]/g : /[^a-z]/g;
   const handleChange = (e) => {
-    onChange(e.target.value.toLowerCase().replace(pattern, '').slice(0, maxLength));
+    const raw = e.target.value.toLowerCase().replace(pattern, '');
+    const normalized = allowWildcard ? raw.replace(/\./g, '?') : raw;
+    onChange(normalized.slice(0, maxLength));
   };
 
   return (

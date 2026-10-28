@@ -58,6 +58,43 @@ export function LearnPage() {
   );
 }
 
+function renderFormattedText(text) {
+  if (typeof text !== 'string') return text;
+  const tokenRegex = /(\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|`[^`]+`)/g;
+  const parts = text.split(tokenRegex);
+  return parts.map((part, idx) => {
+    if (part.startsWith('[') && part.includes('](') && part.endsWith(')')) {
+      const match = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+      if (match) {
+        const [, label, url] = match;
+        if (url.startsWith('/')) {
+          return (
+            <Link key={idx} to={url} className="text-primary underline decoration-primary/40 underline-offset-2 hover:decoration-primary">
+              {label}
+            </Link>
+          );
+        }
+        return (
+          <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="text-primary underline decoration-primary/40 underline-offset-2 hover:decoration-primary">
+            {label}
+          </a>
+        );
+      }
+    }
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={idx} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return (
+        <code key={idx} className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-foreground">
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    return part;
+  });
+}
+
 export function LearnArticlePage() {
   const { slug } = useParams();
   const article = ARTICLES.find((a) => a.slug === slug);
@@ -84,13 +121,105 @@ export function LearnArticlePage() {
         </h1>
         <p className="mt-3 text-lg leading-relaxed text-muted-foreground">{article.description}</p>
         <div className="mt-8">
-          {article.body.map((block, i) => (
-            block.h ? (
-              <h2 key={i} className="mt-8 font-display text-2xl font-semibold text-foreground">{block.h}</h2>
-            ) : (
-              <p key={i} className="mt-4 leading-relaxed text-foreground/90">{block.p}</p>
-            )
-          ))}
+          {article.body.map((block, i) => {
+            if (block.h) {
+              return <h2 key={i} className="mt-10 font-display text-2xl font-semibold text-foreground">{block.h}</h2>;
+            }
+            if (block.h3) {
+              return <h3 key={i} className="mt-6 font-display text-lg font-semibold text-foreground">{block.h3}</h3>;
+            }
+            if (block.p) {
+              return <p key={i} className="mt-4 leading-relaxed text-foreground/90">{renderFormattedText(block.p)}</p>;
+            }
+            if (block.ul) {
+              return (
+                <ul key={i} className="mt-3 list-disc space-y-2 pl-6 leading-relaxed text-foreground/90">
+                  {block.ul.map((item, idx) => (
+                    <li key={idx}>{renderFormattedText(item)}</li>
+                  ))}
+                </ul>
+              );
+            }
+            if (block.ol) {
+              return (
+                <ol key={i} className="mt-3 list-decimal space-y-2 pl-6 leading-relaxed text-foreground/90">
+                  {block.ol.map((item, idx) => (
+                    <li key={idx}>{renderFormattedText(item)}</li>
+                  ))}
+                </ol>
+              );
+            }
+            if (block.table) {
+              return (
+                <div key={i} className="mt-6 overflow-x-auto rounded-xl border border-border">
+                  <table className="w-full text-left text-sm text-foreground">
+                    <thead className="border-b border-border bg-muted/60 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      <tr>
+                        {block.table.headers.map((th, hIdx) => (
+                          <th key={hIdx} className="px-4 py-3">{th}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border bg-card/40">
+                      {block.table.rows.map((row, rIdx) => (
+                        <tr key={rIdx} className="hover:bg-muted/30">
+                          {row.map((cell, cIdx) => (
+                            <td key={cIdx} className="px-4 py-3">{renderFormattedText(cell)}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            }
+            if (block.callout) {
+              return (
+                <aside key={i} className="mt-6 rounded-xl border border-primary/30 bg-primary/5 p-5 text-sm leading-relaxed">
+                  {block.callout.title && (
+                    <h3 className="font-display text-base font-semibold text-foreground mb-2">
+                      {block.callout.title}
+                    </h3>
+                  )}
+                  {block.callout.p && <p className="text-foreground/90">{renderFormattedText(block.callout.p)}</p>}
+                  {block.callout.items && (
+                    <ul className="mt-2 list-disc space-y-1.5 pl-5 text-foreground/90">
+                      {block.callout.items.map((it, idx) => (
+                        <li key={idx}>{renderFormattedText(it)}</li>
+                      ))}
+                    </ul>
+                  )}
+                </aside>
+              );
+            }
+            if (block.exercise) {
+              return (
+                <div key={i} className="mt-6 rounded-xl border border-border bg-card p-5 shadow-sm">
+                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary mb-2">
+                    Practice Exercise
+                  </div>
+                  <h3 className="font-display text-base font-semibold text-foreground mb-2">
+                    {block.exercise.q}
+                  </h3>
+                  {block.exercise.hint && (
+                    <p className="text-xs text-muted-foreground italic mb-3">
+                      Hint: {renderFormattedText(block.exercise.hint)}
+                    </p>
+                  )}
+                  <details className="mt-3 rounded-lg border border-border/80 bg-background/80 p-3 text-sm">
+                    <summary className="cursor-pointer font-medium text-primary hover:underline">
+                      View Solution & Explanation
+                    </summary>
+                    <div className="mt-2 text-foreground/90 space-y-1.5 pt-2 border-t border-border/50">
+                      <p className="font-semibold text-foreground">Answer: {renderFormattedText(block.exercise.a)}</p>
+                      <p className="text-muted-foreground text-xs leading-relaxed">{renderFormattedText(block.exercise.explanation)}</p>
+                    </div>
+                  </details>
+                </div>
+              );
+            }
+            return null;
+          })}
         </div>
         <AdSlot className="mt-10" minHeight={90} />
         <nav aria-label="More guides" className="mt-10 border-t border-border pt-8">

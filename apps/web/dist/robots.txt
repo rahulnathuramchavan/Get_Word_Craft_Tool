@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://getwordcraft.com/sitemap.xml
+Content-Signal: search=yes, ai-train=no

@@ -53,6 +53,8 @@ const LEARN_LINKS = [
   { to: '/learn/wordle-opening-strategy', label: 'Wordle Opening Strategy' },
   { to: '/learn/two-letter-words', label: 'Two-Letter Words to Know' },
   { to: '/learn/wildcards-and-patterns', label: 'Wildcards & Patterns' },
+  { to: '/learn/best-word-in-scrabble', label: 'Best Word in Scrabble' },
+  { to: '/learn/how-to-solve-crossword-clues', label: 'Solve Crossword Clues' },
 ];
 
 function navLinkClass({ isActive }) {
@@ -174,6 +176,15 @@ export default function Layout({ children }) {
                 Word list based on the public-domain ENABLE word list with a
                 common-English frequency layer. Definitions courtesy of the
                 Free Dictionary API.
+              </p>
+              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                Editorial &amp; support inquiries:{' '}
+                <a
+                  href="mailto:hello@getwordcraft.com"
+                  className="font-medium text-foreground underline decoration-primary underline-offset-2 hover:text-primary"
+                >
+                  hello@getwordcraft.com
+                </a>
               </p>
             </div>
             <nav aria-label="Tools">

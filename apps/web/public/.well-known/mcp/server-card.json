@@ -1,0 +1,114 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schemas/server-card/v1.json",
+  "name": "getwordcraft",
+  "displayName": "WordCraft Tool MCP Server",
+  "description": "Free, fast word-game utilities and references: word finding, anagram solving, Wordle assistance, and crossword solving over an open 437,673-word dictionary.",
+  "version": "1.0.0",
+  "homepage": "https://getwordcraft.com",
+  "author": {
+    "name": "WordCraft Tool",
+    "url": "https://getwordcraft.com/about"
+  },
+  "license": "MIT",
+  "capabilities": {
+    "tools": {
+      "listChanged": false
+    },
+    "resources": {
+      "subscribe": false,
+      "listChanged": false
+    },
+    "prompts": {
+      "listChanged": false
+    }
+  },
+  "endpoint": "https://getwordcraft.com/.well-known/mcp/server-card.json",
+  "tools": [
+    {
+      "name": "word_finder",
+      "description": "Find tournament-valid English words from a rack of letters with wildcard (?) support and pattern matching constraints.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "letters": {
+            "type": "string",
+            "description": "Letters available on the rack. Use ? for blank wildcard tiles."
+          },
+          "pattern": {
+            "type": "string",
+            "description": "Optional board pattern with dots for unknown squares (e.g. 'c..ft')."
+          },
+          "sort": {
+            "type": "string",
+            "enum": ["score", "length-desc", "alpha"],
+            "description": "Sort order: 'score' (default), 'length-desc', or 'alpha'."
+          }
+        },
+        "required": ["letters"]
+      }
+    },
+    {
+      "name": "word_unscrambler",
+      "description": "Unscramble any jumbled rack of letters into all playable words sorted by length or classic Scrabble score.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "letters": {
+            "type": "string",
+            "description": "The jumbled rack of letters to unscramble. Supports ? for wildcards."
+          }
+        },
+        "required": ["letters"]
+      }
+    },
+    {
+      "name": "anagram_solver",
+      "description": "Find all exact full-length anagram permutations for a given word or letter combination.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "word": {
+            "type": "string",
+            "description": "Word or letter set to find anagrams for."
+          }
+        },
+        "required": ["word"]
+      }
+    },
+    {
+      "name": "wordle_helper",
+      "description": "Filter 5-letter English words matching Wordle color feedback (green, yellow, gray).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "green": {
+            "type": "string",
+            "description": "5-letter string with known letters in exact positions (e.g. 's...e')."
+          },
+          "yellow": {
+            "type": "string",
+            "description": "Letters known to be in the word but in the wrong position."
+          },
+          "gray": {
+            "type": "string",
+            "description": "Letters confirmed not present in the word."
+          }
+        }
+      }
+    },
+    {
+      "name": "crossword_finder",
+      "description": "Find words matching a crossword pattern where missing letters are represented by dots (e.g. 'c..ft').",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "pattern": {
+            "type": "string",
+            "description": "Crossword pattern with dots for blank squares (e.g. 'c..ft')."
+          }
+        },
+        "required": ["pattern"]
+      }
+    }
+  ]
+}

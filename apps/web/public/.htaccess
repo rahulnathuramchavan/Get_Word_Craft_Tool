@@ -2,21 +2,60 @@ Options -MultiViews
 RewriteEngine On
 RewriteBase /
 
-# ── Force HTTPS ──────────────────────────────────────────────────────────────
-RewriteCond %{HTTPS} off
-RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-# ── Force non-www (Canonical Hostname) ────────────────────────────────────────
+# ── Force HTTPS & Non-WWW (Canonical Hostname in single 301 hop) ─────────────
 RewriteCond %{HTTP_HOST} ^www\.getwordcraft\.com$ [NC]
 RewriteRule ^ https://getwordcraft.com%{REQUEST_URI} [L,R=301]
 
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://getwordcraft.com%{REQUEST_URI} [L,R=301]
+
+# ── Content Negotiation: Serve Markdown when requested via Accept: text/markdown ─
+RewriteCond %{HTTP:Accept} text/markdown [NC]
+RewriteCond %{REQUEST_URI} ^/(index\.html)?$
+RewriteRule ^ index.md [L]
+
+# ── RFC 8288 Link Headers for Agent Resource Discovery ────────────────────────
+<IfModule mod_headers.c>
+  SetEnvIf Request_URI "^/(index\.(html|md))?$" IS_HOMEPAGE
+  Header add Link '<https://getwordcraft.com/llms.txt>; rel="alternate"; type="text/markdown"' env=IS_HOMEPAGE
+  Header add Link '<https://getwordcraft.com/.well-known/mcp/server-card.json>; rel="service-desc"; type="application/json"' env=IS_HOMEPAGE
+</IfModule>
+
+# ── MIME Types & Headers for Specific Agent / SEO Endpoints ───────────────────
+<Files "llms.txt">
+  ForceType text/plain
+  Header set Content-Type "text/plain; charset=utf-8"
+</Files>
+
+<Files "index.md">
+  ForceType text/markdown
+  Header set Content-Type "text/markdown; charset=utf-8"
+  Header set Vary "Accept"
+</Files>
+
+<Files "server-card.json">
+  ForceType application/json
+  Header set Content-Type "application/json; charset=utf-8"
+  Header set Access-Control-Allow-Origin "*"
+</Files>
+
+<Files "robots.txt">
+  ForceType text/plain
+  Header set Content-Type "text/plain; charset=utf-8"
+</Files>
+
+<Files "sitemap.xml">
+  ForceType application/xml
+  Header set Content-Type "application/xml; charset=utf-8"
+</Files>
+
 # ── Gzip Compression (mod_deflate) ───────────────────────────────────────────
 <IfModule mod_deflate.c>
-  # Compress text, html, javascript, css, xml, json, svg
   AddOutputFilterByType DEFLATE text/plain
   AddOutputFilterByType DEFLATE text/html
   AddOutputFilterByType DEFLATE text/css
   AddOutputFilterByType DEFLATE text/xml
+  AddOutputFilterByType DEFLATE text/markdown
   AddOutputFilterByType DEFLATE text/javascript
   AddOutputFilterByType DEFLATE application/javascript
   AddOutputFilterByType DEFLATE application/x-javascript
@@ -27,24 +66,25 @@ RewriteRule ^ https://getwordcraft.com%{REQUEST_URI} [L,R=301]
   AddOutputFilterByType DEFLATE application/atom_xml
   AddOutputFilterByType DEFLATE image/svg+xml
 
-  # Exclude already-compressed binary formats
   SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|webp|avif|zip|gz|tgz|bz2|mp3|ogg|wav|mp4|webm|pdf|woff2)$ no-gzip dont-vary
 </IfModule>
 
-# ── Browser Caching (mod_expires & mod_headers) ──────────────────────────────
+# ── Browser & Edge Caching (mod_expires & mod_headers) ────────────────────────
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresDefault "access plus 1 month"
 
-  # HTML: Always revalidate to ensure visitors receive new deployments
+  # HTML: Always revalidate to ensure visitors receive new deployments immediately
   ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/markdown "access plus 0 seconds"
 
-  # Static metadata files: moderate cache with revalidation
+  # Static metadata files: 1 day with revalidation
   ExpiresByType text/xml "access plus 1 day"
   ExpiresByType application/xml "access plus 1 day"
   ExpiresByType text/plain "access plus 1 day"
+  ExpiresByType application/json "access plus 1 day"
 
-  # Fingerprinted Vite assets (JS, CSS, SVGs): 1 year
+  # Fingerprinted Vite assets: 1 year immutable
   ExpiresByType text/css "access plus 1 year"
   ExpiresByType application/javascript "access plus 1 year"
   ExpiresByType text/javascript "access plus 1 year"
@@ -53,25 +93,33 @@ RewriteRule ^ https://getwordcraft.com%{REQUEST_URI} [L,R=301]
 </IfModule>
 
 <IfModule mod_headers.c>
-  # 1. Immutable caching for Vite fingerprinted assets under /assets/
+  # 1. Immutable caching for Vite fingerprinted assets
   <FilesMatch "\.(?:js|css)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
   # 2. HTML: Always check for updates
-  <FilesMatch "\.(?:html)$">
+  <FilesMatch "\.(?:html|md)$">
     Header set Cache-Control "public, max-age=0, must-revalidate"
   </FilesMatch>
 
-  # 3. Dynamic XML/TXT (sitemap, robots)
-  <FilesMatch "\.(?:xml|txt)$">
+  # 3. Dynamic XML/TXT (sitemap, robots, llms)
+  <FilesMatch "\.(?:xml|txt|json)$">
     Header set Cache-Control "public, max-age=86400, stale-while-revalidate=3600"
   </FilesMatch>
 </IfModule>
 
-# ── SPA fallback: serve real files/dirs directly, else return index.html ─────
+# ── Real Files and Directories: Serve Directly ───────────────────────────────
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-RewriteRule ^ index.html [QSA,L]
+# ── Known Single Page Application Routes -> Serve index.html (200 OK) ────────
+RewriteRule ^$ index.html [QSA,L]
+RewriteRule ^(word-finder|word-unscrambler|anagram-solver|wordle-helper|crossword-finder|scramble-generator|definition-finder|word-lists)/?$ index.html [QSA,L]
+RewriteRule ^learn(/.*)?$ index.html [QSA,L]
+RewriteRule ^(about|contact|privacy|terms|disclaimer)/?$ index.html [QSA,L]
+
+# ── Custom 404 Error Handling for Unknown / Non-Existent Routes ──────────────
+ErrorDocument 404 /404.html
+RewriteRule ^ - [R=404,L]

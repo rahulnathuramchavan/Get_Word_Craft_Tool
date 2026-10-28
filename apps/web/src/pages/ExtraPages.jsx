@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
-  AlertTriangle, Check, ChevronLeft, ChevronRight, Copy, Dices, Eye, EyeOff, Loader2, RotateCcw, Search, X,
+  AlertTriangle, Check, ChevronLeft, ChevronRight, Copy, Dices, Eye, EyeOff, Info, Loader2, RotateCcw, Search, Volume2, X,
 } from 'lucide-react';
 import Seo from '@/components/Seo';
 import JsonLd from '@/components/JsonLd';
@@ -10,7 +10,7 @@ import ToolShell from '@/components/ToolShell';
 import { Tile } from '@/components/TileInput';
 import Results, { WordChip } from '@/components/Results';
 import useDictionary from '@/hooks/useDictionary';
-import { randomWord, scrambleWord, browseWordList } from '@/lib/dictionary';
+import { randomWord, scrambleWord, browseWordList, scoreWord, resolveAudioUrl } from '@/lib/dictionary';
 import { copyText } from '@/lib/clipboard';
 import { TOOLS } from '@/lib/tools';
 import { SITE_URL, webApplicationLd, breadcrumbLd, faqLd } from '@/lib/seo';
@@ -34,7 +34,7 @@ const SG_FAQS = [
   },
   {
     q: 'Are the scrambled words real dictionary words?',
-    a: 'Yes. Every puzzle is selected from our common English word list, and the letters are shuffled using the Fisher-Yates algorithm until they differ from the original solution.',
+    a: 'Yes. Every puzzle is selected from our common English word list, shuffled using the Fisher-Yates algorithm, and verified to ensure the scrambled letter sequence differs from the original solution.',
   },
   {
     q: 'Can I scramble my own custom word list?',
@@ -298,44 +298,171 @@ export function DefinitionPage() {
           )}
           {state.status === 'empty' && (
             <div className="rounded-xl border border-dashed border-border bg-background p-6" role="status">
-              <p className="text-sm text-muted-foreground">
-                No definition found for “<span className="font-semibold text-foreground">{state.word}</span>”.
+              <div className="flex items-center gap-2 text-foreground font-semibold">
+                <Info className="h-5 w-5 text-primary" aria-hidden="true" />
+                <span>No dictionary entry found for &ldquo;{state.word}&rdquo;</span>
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                General-purpose online dictionaries focus on conversational English and often omit specialized word-game plays, ancient loanwords, or tournament-only hook words.
               </p>
-              <p className="mt-2 text-xs text-muted-foreground">
-                It may be an obscure tournament-only hook word (like <em>AA</em> or <em>QI</em>), newly coined slang, or misspelled.
-                You can browse verified game words by length in our <a href="/word-lists" className="text-primary underline hover:text-primary/80">Word Lists</a> or unscramble letters in the <a href="/word-unscrambler" className="text-primary underline hover:text-primary/80">Word Unscrambler</a>.
-              </p>
+              <div className="mt-4 rounded-lg bg-card/60 border border-border/80 p-3.5 text-xs text-muted-foreground space-y-1.5">
+                <p className="font-medium text-foreground">Why this happens in word games:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li><strong>Tournament Hook Words:</strong> Words like <em>QI</em>, <em>ZA</em>, <em>AA</em>, <em>XI</em>, or <em>JO</em> are valid plays in Scrabble and Words With Friends tournament lexicons, but general-purpose API dictionaries frequently lack definitions for them.</li>
+                  <li><strong>Tile Scoring:</strong> Even without an API definition, if playable from your letters, this word scores {scoreWord(state.word)} classic tile points.</li>
+                  <li><strong>Misspelling:</strong> Verify letter spelling or try looking for near matches in Word Finder.</li>
+                </ul>
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Link
+                  to="/word-lists"
+                  className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary"
+                >
+                  Browse Word Lists
+                </Link>
+                <Link
+                  to={`/word-unscrambler?letters=${encodeURIComponent(state.word)}`}
+                  className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary"
+                >
+                  Unscramble Letters
+                </Link>
+                <Link
+                  to="/learn/two-letter-words"
+                  className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary"
+                >
+                  2-Letter Words Guide
+                </Link>
+              </div>
             </div>
           )}
           {state.status === 'ready' && (
             <div className="grid gap-4">
-              {state.entries.map((entry, i) => (
-                <article key={i} className="rounded-xl border border-border bg-background p-5">
-                  <h2 className="font-display text-2xl font-semibold text-foreground">{entry.word}</h2>
-                  {entry.phonetic && <p className="mt-1 text-sm text-muted-foreground">{entry.phonetic}</p>}
-                  {(entry.meanings || []).map((m, j) => (
-                    <section key={j} className="mt-4">
-                      <h3 className="text-sm font-semibold italic text-primary">{m.partOfSpeech}</h3>
-                      <ol className="mt-2 list-decimal space-y-2 pl-5">
-                        {(m.definitions || []).slice(0, 4).map((d, k) => (
-                          <li key={k} className="text-sm leading-relaxed text-foreground">
-                            {d.definition}
-                            {d.example && <span className="block text-muted-foreground">“{d.example}”</span>}
-                          </li>
-                        ))}
-                      </ol>
-                      {m.synonyms?.length > 0 && (
-                        <p className="mt-2 text-xs text-muted-foreground">
-                          Synonyms: {m.synonyms.slice(0, 6).join(', ')}
-                        </p>
+              {/* Word Game & Linguistic Profile */}
+              <div className="rounded-xl border border-border bg-card/60 p-4 sm:p-5">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
+                  <div>
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Word Game Profile</span>
+                    <h2 className="font-display text-2xl font-bold uppercase tracking-tight text-foreground">
+                      {state.word}
+                    </h2>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2.5 py-1 font-semibold text-primary">
+                      Tile Score: {scoreWord(state.word)} pts
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 font-medium text-secondary-foreground">
+                      {state.word.length} {state.word.length === 1 ? 'letter' : 'letters'}
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2.5 py-1 font-medium text-muted-foreground">
+                      {state.word.split('').filter((c) => 'aeiou'.includes(c)).length} vowels · {state.word.split('').filter((c) => 'bcdfghjklmnpqrstvwxyz'.includes(c)).length} consonants
+                    </span>
+                  </div>
+                </div>
+
+                {/* Quick Solver Cross-Links */}
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-medium text-muted-foreground">Cross-tool actions:</span>
+                  <Link
+                    to={`/word-unscrambler?letters=${encodeURIComponent(state.word)}`}
+                    className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
+                  >
+                    Unscramble letters
+                  </Link>
+                  <Link
+                    to={`/anagram-solver?word=${encodeURIComponent(state.word)}`}
+                    className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
+                  >
+                    Exact anagrams
+                  </Link>
+                  <Link
+                    to={`/crossword-finder?pattern=${encodeURIComponent(state.word)}`}
+                    className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
+                  >
+                    Crossword pattern
+                  </Link>
+                  <Link
+                    to={`/word-finder?contains=${encodeURIComponent(state.word)}`}
+                    className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
+                  >
+                    Board finder
+                  </Link>
+                </div>
+              </div>
+
+              {state.entries.map((entry, i) => {
+                const audioUrl = resolveAudioUrl(entry.phonetics);
+                const playAudio = audioUrl ? () => {
+                  try {
+                    const audio = new Audio(audioUrl);
+                    audio.play().catch(() => {});
+                  } catch {}
+                } : null;
+
+                return (
+                  <article key={i} className="rounded-xl border border-border bg-background p-5">
+                    <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-border/60 pb-3">
+                      <div>
+                        <h3 className="font-display text-2xl font-semibold text-foreground">{entry.word}</h3>
+                        {entry.phonetic && <p className="mt-0.5 font-mono text-xs text-muted-foreground">{entry.phonetic}</p>}
+                      </div>
+                      {playAudio && (
+                        <button
+                          type="button"
+                          onClick={playAudio}
+                          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary/70 px-3 py-1 text-xs font-semibold text-foreground transition-colors hover:bg-secondary active:scale-95"
+                          title="Listen to audio pronunciation"
+                          aria-label={`Pronounce ${entry.word}`}
+                        >
+                          <Volume2 className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+                          <span>Pronounce</span>
+                        </button>
                       )}
-                    </section>
-                  ))}
-                </article>
-              ))}
-              <p className="text-xs text-muted-foreground">
-                Definitions from the Free Dictionary API (dictionaryapi.dev), an open community dictionary.
-              </p>
+                    </div>
+
+                    {(entry.meanings || []).map((m, j) => (
+                      <section key={j} className="mt-4">
+                        <div className="flex items-center gap-2">
+                          <span className="inline-block rounded-md bg-primary/10 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-primary">
+                            {m.partOfSpeech}
+                          </span>
+                        </div>
+                        <ol className="mt-2.5 list-decimal space-y-2 pl-5">
+                          {(m.definitions || []).slice(0, 4).map((d, k) => (
+                            <li key={k} className="text-sm leading-relaxed text-foreground">
+                              <span>{d.definition}</span>
+                              {d.example && (
+                                <span className="mt-1 block rounded-r-md border-l-2 border-primary/40 bg-accent/30 py-1 pl-2.5 text-xs italic text-muted-foreground">
+                                  &ldquo;{d.example}&rdquo;
+                                </span>
+                              )}
+                            </li>
+                          ))}
+                        </ol>
+                        {m.synonyms?.length > 0 && (
+                          <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-xs">
+                            <span className="font-medium text-muted-foreground">Synonyms:</span>
+                            {m.synonyms.slice(0, 6).map((syn) => (
+                              <button
+                                key={syn}
+                                type="button"
+                                onClick={() => { setInput(syn); lookup(syn); }}
+                                className="rounded bg-secondary/80 px-1.5 py-0.5 text-xs text-foreground transition-colors hover:bg-secondary"
+                              >
+                                {syn}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </section>
+                    ))}
+                  </article>
+                );
+              })}
+              <div className="rounded-lg border border-border/60 bg-muted/30 p-3 text-xs text-muted-foreground">
+                <p>
+                  <strong>Data transparency:</strong> Definitions, phonetics, and usage citations are provided live from the open Free Dictionary API (dictionaryapi.dev) with Datamuse lexical fallbacks. Word game tile scoring, letter counts, and rack permutations are computed locally by GetWordCraft.com.
+                </p>
+              </div>
             </div>
           )}
         </div>
@@ -396,6 +523,122 @@ function getPageNumbers(currentPage, totalPages) {
   return pages;
 }
 
+const CATEGORY_STRATEGY = {
+  two: {
+    title: 'Two-Letter Foundations & Parallel Plays',
+    badge: 'Core Game Skill',
+    summary: 'Two-letter words are the single highest-leverage asset in Scrabble and Words With Friends. Because parallel plays run alongside established board words, each tile placed scores both horizontally and vertically simultaneously.',
+    tips: [
+      'Master high-value hooks first: ZA (11 pts), QI (11 pts), XI (9 pts), JO (9 pts), and AX (9 pts).',
+      'Use 2-letter connectors to place high-scoring letters on multiplier squares while building parallel cross-words.',
+      'Check vowel-only hooks like AA, AE, AI, OE, and OI to shed excess vowels without wasting a turn.',
+    ],
+    studyTip: 'Memorize 5 to 10 two-letter words per day. Test yourself by covering the list and writing all words for a specific starting letter.',
+    link: { to: '/learn/two-letter-words', label: 'Read Two-Letter Words Strategy Guide' },
+  },
+  three: {
+    title: 'Three-Letter Extension Hooks',
+    badge: 'Board Maneuvering',
+    summary: 'Three-letter words expand board possibilities by hooking onto existing 2-letter anchors. They are vital for navigating tight board corners and reaching Double and Triple Word multipliers.',
+    tips: [
+      'Front-hooks: Learn letters that attach to the front of 2-letter words (e.g., adding C to AT makes CAT; adding S to PA makes SPA).',
+      'Back-hooks: Learn letters that attach to the end (e.g., adding S, D, or Y to 2-letter foundations).',
+      'High-value plays like QAT, ZAP, and FOX turn awkward high-point tiles into 20+ point turns in tight spaces.',
+    ],
+    studyTip: 'Group three-letter words by their parent two-letter word (e.g. all 3-letter words built from AT: BAT, CAT, EAT, FAT, HAT, MAT, OAT, PAT, RAT, SAT, TAT, VAT).',
+    link: { to: '/learn/unscramble-words-faster', label: 'Rack Solving Techniques' },
+  },
+  'q-no-u': {
+    title: 'Q Without U Lifelines',
+    badge: 'High-Value Tile Defense',
+    summary: 'Holding a 10-point Q when no U is available often traps players into taking a scoreless tile-exchange turn. Memorizing verified Q-without-U words allows you to dump the Q profitably.',
+    tips: [
+      'Essential short lifelines: QI (2 letters), QAT (3 letters), QOPH, QADI, TRANQ (5 letters), FAQIR, and BURQA (5 letters).',
+      'Landing the Q on a Triple Letter square nets 30 points on QI alone, and scores 60+ points if played across a parallel cross-word.',
+      'Never forfeit a turn swapping tiles if one of these Q-without-U lifelines is playable on the board.',
+    ],
+    studyTip: 'There are only a handful of playable short Q-without-U words in standard English lexicons. Write them on an index card and review them before game nights.',
+    link: { to: '/word-finder?letters=q&mode=all', label: 'Search Q Plays in Word Finder' },
+  },
+  power: {
+    title: 'Power Tiles (J, Q, X, Z) Under 7 Letters',
+    badge: 'Point Multipliers',
+    summary: 'Tiles worth 8 or 10 points (J, Q, X, Z) account for a decisive share of total match scores. In short words (up to 6 letters), they can easily net 30 to 50+ points when hitting premium multiplier squares.',
+    tips: [
+      'Look for parallel opportunities where the power letter scores in two directions at once (e.g. playing AX vertically to make OX horizontally).',
+      'Avoid hoarding power tiles on your rack waiting for an elusive 7-letter bingo; playing them early keeps your rack fluid.',
+      'Common words vs. All words: Toggle the vocabulary mode filter to see everyday terms versus full tournament-indexed entries.',
+    ],
+    studyTip: 'Practice finding words that use your power tile as the first, middle, or last letter so you can adapt to any open multiplier on the board.',
+    link: { to: '/learn/unscramble-words-faster', label: 'Unscrambling Strategies' },
+  },
+  vowels: {
+    title: 'Vowel-Heavy Words (60%+ Vowel Content)',
+    badge: 'Rack Balancing',
+    summary: 'Accumulating 5 or 6 vowels on your rack paralyzes scoring potential. Vowel-heavy words allow you to shed surplus vowels in a single turn without sacrificing your turn to swap tiles.',
+    tips: [
+      'Key vowel-heavy lifelines: AA, AE, AI, OE, OI (2 letters); AUA, EAU (3 letters); AERIE, AUDIO, OORIE (5 letters).',
+      'Dumping 3 to 4 vowels at once resets your rack balance toward an optimal 3-vowel, 4-consonant ratio.',
+      'Aim to place vowel dumps where they hook onto existing consonants on the board to maximize points.',
+    ],
+    studyTip: 'Whenever your rack has 5+ vowels, immediately look for high-vowel dump plays like AUDIO, AERIE, or ADIEU before considering a tile exchange.',
+    link: { to: '/learn/wildcards-and-patterns', label: 'Pattern Matching Guide' },
+  },
+};
+
+function getLengthStrategy(len) {
+  if (len <= 3) {
+    return {
+      title: `${len}-Letter Hook Words`,
+      badge: `${len}-Letter List`,
+      summary: `Short ${len}-letter words are essential for maneuvering in tight board positions and creating perpendicular cross-plays that score in two directions at once.`,
+      tips: [
+        'Study words in small batches of 5 to 10 per session for fast recall.',
+        'Watch for high-point consonants like J, K, Q, X, and Z that turn short plays into big scores.',
+      ],
+      studyTip: `Focus on ${len}-letter words featuring awkward consonants (C, J, K, Q, V, X, Z) to keep your rack balanced.`,
+      link: { to: '/learn/two-letter-words', label: 'Two-Letter Strategy Guide' },
+    };
+  }
+  if (len === 5) {
+    return {
+      title: '5-Letter Words & Wordle Candidates',
+      badge: 'Daily Puzzles & Wordle',
+      summary: '5-letter words are the foundation of daily Wordle puzzles and key bridge plays in Scrabble. Our list allows you to filter by starting letter and vocabulary frequency tier.',
+      tips: [
+        'For Wordle practice, select "Common Words" mode to match curated daily solution lists.',
+        'Filter by starting letter to test specific puzzle positions or consonant blends (e.g. ST-, CR-, TR-).',
+      ],
+      studyTip: 'Identify 5-letter words containing 3 common vowels (like CRANE, SLATE, AUDIO) to use as strong opening guesses in Wordle.',
+      link: { to: '/wordle-helper', label: 'Open Wordle Helper' },
+    };
+  }
+  if (len === 7 || len === 8) {
+    return {
+      title: `${len}-Letter Bingo Targets (50-Point Bonus)`,
+      badge: 'Bingo Candidates',
+      summary: `In competitive Scrabble, playing all 7 rack tiles awards a 50-point bonus (a "Bingo"). Mastering ${len}-letter words with common prefixes (RE-, UN-) and suffixes (-ING, -ED, -ERS) is essential for tournament-level scoring.`,
+      tips: [
+        'Look for high-probability 6-letter stems (like RETINA, SATIRE, TISANE) that form bingos with almost any seventh tile.',
+        'Sort by highest score to discover high-value words that combine a bingo bonus with premium letter multipliers.',
+      ],
+      studyTip: 'Practice spotting common prefixes and suffixes first, then rearrange the remaining letters into familiar roots.',
+      link: { to: '/learn/unscramble-words-faster', label: 'Bingo Solving Techniques' },
+    };
+  }
+  return {
+    title: `${len}-Letter Dictionary Words`,
+    badge: `${len}-Letter List`,
+    summary: `Explore verified ${len}-letter English words from our reference dictionary. Filter by starting letter, sort alphabetically or by classic tile score, and copy words for offline study.`,
+    tips: [
+      'Break long lists into manageable study groups of 10 to 15 words rather than attempting to memorize everything at once.',
+      'Use the search filter to test specific stems or letter clusters within the list.',
+    ],
+    studyTip: 'Look for shared roots, prefixes, and suffixes to group related words together in memory.',
+    link: { to: '/word-finder', label: 'Search Patterns in Word Finder' },
+  };
+}
+
 export function WordListsPage() {
   const { status, dict, error, retry } = useDictionary();
   const [browseGroup, setBrowseGroup] = useState('curated'); // 'curated' | 'length'
@@ -406,6 +649,14 @@ export function WordListsPage() {
   const [sort, setSort] = useState('alpha-asc');
   const [page, setPage] = useState(1);
   const [copied, setCopied] = useState('');
+
+  const activeStrategy = useMemo(() => {
+    if (browseGroup === 'curated') {
+      return CATEGORY_STRATEGY[category] || CATEGORY_STRATEGY.two;
+    }
+    const len = parseInt(category.replace('len-', ''), 10) || 5;
+    return getLengthStrategy(len);
+  }, [browseGroup, category]);
 
   const handleGroupChange = (group) => {
     setBrowseGroup(group);
@@ -598,6 +849,62 @@ export function WordListsPage() {
                     </div>
                   </div>
                 )}
+              </div>
+            </div>
+
+            {/* Dynamic Strategic Context Guide */}
+            <div className="rounded-xl border border-border bg-card/60 p-4 sm:p-5">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/70 pb-3">
+                <div className="flex items-center gap-2">
+                  <h2 className="font-display text-lg font-bold text-foreground sm:text-xl">
+                    {activeStrategy.title}
+                  </h2>
+                  <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                    {activeStrategy.badge}
+                  </span>
+                </div>
+                {activeStrategy.link && (
+                  <Link
+                    to={activeStrategy.link.to}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-primary underline hover:text-primary/80"
+                  >
+                    {activeStrategy.link.label} &rarr;
+                  </Link>
+                )}
+              </div>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                {activeStrategy.summary}
+              </p>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                <div className="space-y-1.5 rounded-lg border border-border/60 bg-background/50 p-3 text-xs text-muted-foreground">
+                  <span className="font-semibold text-foreground">Tactical Advice:</span>
+                  <ul className="list-disc list-inside space-y-1">
+                    {activeStrategy.tips.map((tip, idx) => (
+                      <li key={idx}>{tip}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="flex flex-col justify-between rounded-lg border border-border/60 bg-background/50 p-3 text-xs text-muted-foreground">
+                  <div>
+                    <span className="font-semibold text-foreground">Manageable Learning Tip:</span>
+                    <p className="mt-1 leading-relaxed">{activeStrategy.studyTip}</p>
+                  </div>
+                  <div className="mt-2.5 flex flex-wrap items-center gap-2 pt-2 border-t border-border/40">
+                    <span className="text-[11px] font-medium text-foreground">Practice this list in:</span>
+                    <Link
+                      to="/word-unscrambler"
+                      className="rounded bg-secondary/80 px-2 py-0.5 text-[11px] font-medium text-foreground hover:bg-secondary"
+                    >
+                      Word Unscrambler
+                    </Link>
+                    <Link
+                      to="/word-finder"
+                      className="rounded bg-secondary/80 px-2 py-0.5 text-[11px] font-medium text-foreground hover:bg-secondary"
+                    >
+                      Word Finder
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
 

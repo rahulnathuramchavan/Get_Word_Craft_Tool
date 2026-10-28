@@ -111,7 +111,7 @@ export function findWords(dict, options = {}) {
   } = options;
 
   const rack = letters.toLowerCase().replace(/[^a-z?]/g, '');
-  const pat = pattern.toLowerCase().replace(/[^a-z?]/g, '');
+  const pat = pattern.toLowerCase().replace(/\./g, '?').replace(/[^a-z?]/g, '');
   const pre = startsWith.toLowerCase().replace(/[^a-z]/g, '');
   const suf = endsWith.toLowerCase().replace(/[^a-z]/g, '');
   const mid = contains.toLowerCase().replace(/[^a-z]/g, '');
@@ -242,7 +242,7 @@ export function scrambleWord(word) {
   const chars = word.split('');
   if (chars.length < 2) return word;
 
-  // If all characters are identical, scrambling is impossible
+  // If all characters are identical, a visibly distinct scramble is impossible
   const first = chars[0];
   if (chars.every((c) => c === first)) return word;
 
@@ -254,7 +254,19 @@ export function scrambleWord(word) {
     const scrambled = chars.join('');
     if (scrambled !== word) return scrambled;
   }
-  return chars.join('');
+
+  // Deterministic fallback: swap the first pair of distinct characters
+  const fallback = word.split('');
+  for (let i = 0; i < fallback.length - 1; i++) {
+    for (let j = i + 1; j < fallback.length; j++) {
+      if (fallback[i] !== fallback[j]) {
+        [fallback[i], fallback[j]] = [fallback[j], fallback[i]];
+        return fallback.join('');
+      }
+    }
+  }
+
+  return word;
 }
 
 export function getCategoryWords(dict, categoryId) {
@@ -336,4 +348,25 @@ export function browseWordList(dict, options = {}) {
     pageSize: safePageSize,
   };
 }
+
+/**
+ * Safely resolves and normalizes a playable pronunciation audio URL from a phonetics array.
+ * Validates protocol schemes (https, http, and protocol-relative //).
+ * Returns null for missing, malformed, or relative audio paths.
+ */
+export function resolveAudioUrl(phonetics) {
+  if (!Array.isArray(phonetics)) return null;
+  const raw = phonetics.find(
+    (p) => p && typeof p.audio === 'string' && p.audio.trim().length > 0
+  )?.audio?.trim();
+  if (!raw) return null;
+  if (raw.startsWith('//')) {
+    return `https:${raw}`;
+  }
+  if (raw.startsWith('https://') || raw.startsWith('http://')) {
+    return raw;
+  }
+  return null;
+}
+
 

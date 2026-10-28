@@ -3,189 +3,54 @@
 import fs from 'fs';
 import path from 'path';
 
-const CLEAN_CONTENT_REGEX = {
-	comments: /\/\*[\s\S]*?\*\/|\/\/.*$/gm,
-	templateLiterals: /`[\s\S]*?`/g,
-	strings: /'[^']*'|"[^"]*"/g,
-	jsxExpressions: /\{.*?\}/g,
-	htmlEntities: {
-		quot: /&quot;/g,
-		amp: /&amp;/g,
-		lt: /&lt;/g,
-		gt: /&gt;/g,
-		apos: /&apos;/g
-	}
-};
+const LLMS_TXT_CONTENT = `# WordCraft Tool
 
-const EXTRACTION_REGEX = {
-	// `element={<Page />}` puts a `>` inside the tag, so the attribute scan has
-	// to step over brace groups instead of stopping at the first `>`.
-	route: /<Route\s+(?:[^>{]|\{[^}]*\})*\/?>/g,
-	path: /path=["']([^"']+)["']/,
-	element: /element=\{([\s\S]*)\}/,
-	elementComponent: /<(\w+)/g,
-	helmet: /<Helmet[^>]*?>([\s\S]*?)<\/Helmet>/i,
-	helmetTest: /<Helmet[\s\S]*?<\/Helmet>/i,
-	title: /<title[^>]*?>\s*(.*?)\s*<\/title>/i,
-	description: /<meta\s+name=["']description["']\s+content=["'](.*?)["']/i
-};
+> WordCraft Tool (https://getwordcraft.com/) is a free, fast, privacy-focused word-game reference and solver toolkit. Powered by an open 437,673-word English ENABLE dictionary, all tools run 100% client-side in the browser with zero registration, zero accounts, and zero tracking.
 
-function cleanContent(content) {
-	return content
-		.replace(CLEAN_CONTENT_REGEX.comments, '')
-		.replace(CLEAN_CONTENT_REGEX.templateLiterals, '""')
-		.replace(CLEAN_CONTENT_REGEX.strings, '""');
-}
+## Core Tools
+- [Word Finder](https://getwordcraft.com/word-finder): Search for words using letter racks and pattern constraints.
+- [Word Unscrambler](https://getwordcraft.com/word-unscrambler): Unscramble letter sets with support for wildcards (?) to find Scrabble and game plays.
+- [Anagram Solver](https://getwordcraft.com/anagram-solver): Find exact anagrams from any combination of letters.
+- [Wordle Helper](https://getwordcraft.com/wordle-helper): Filter 5-letter words using green, yellow, and gray letter feedback.
+- [Crossword Finder](https://getwordcraft.com/crossword-finder): Solve crossword blanks using fixed letters and wildcard dots (e.g. c..ft).
+- [Scramble Generator](https://getwordcraft.com/scramble-generator): Create solvable anagram scrambles for study or puzzles.
+- [Definition Finder](https://getwordcraft.com/definition-finder): Search dictionary definitions and pronunciations via the open Free Dictionary API.
+- [Word Lists](https://getwordcraft.com/word-lists): Browse curated word lists (2-letter words, Q without U, high-scoring words).
 
-function cleanText(text) {
-	if (!text) return text;
+## Educational Articles & Strategy Guides
+- [How to Unscramble Words Faster](https://getwordcraft.com/learn/unscramble-words-faster): Step-by-step techniques and affix parking for unscrambling letter racks.
+- [Wordle Opening Strategy](https://getwordcraft.com/learn/wordle-opening-strategy): Letter frequency analysis and optimal starting guesses.
+- [The Two-Letter Words Every Word-Game Player Should Know](https://getwordcraft.com/learn/two-letter-words): Essential two-letter hook words for competitive tile games.
+- [Wildcards and Letter Patterns](https://getwordcraft.com/learn/wildcards-and-patterns): How to use blanks and regex patterns to solve difficult puzzle grids.
+- [How to Find the Best Word in Scrabble](https://getwordcraft.com/learn/best-word-in-scrabble): A practical decision framework balancing rack leave equity and board defense.
+- [How to Solve Crossword Clues](https://getwordcraft.com/learn/how-to-solve-crossword-clues): Structural clue types and constraint-satisfaction solving methods.
 
-	return text
-		.replace(CLEAN_CONTENT_REGEX.jsxExpressions, '')
-		.replace(CLEAN_CONTENT_REGEX.htmlEntities.quot, '"')
-		.replace(CLEAN_CONTENT_REGEX.htmlEntities.amp, '&')
-		.replace(CLEAN_CONTENT_REGEX.htmlEntities.lt, '<')
-		.replace(CLEAN_CONTENT_REGEX.htmlEntities.gt, '>')
-		.replace(CLEAN_CONTENT_REGEX.htmlEntities.apos, "'")
-		.trim();
-}
+## Company, Trust & Contact
+- [About WordCraft Tool](https://getwordcraft.com/about): Mission, technology stack, and dictionary data sources.
+- [Contact](https://getwordcraft.com/contact): Inquiries and feedback via hello@getwordcraft.com.
+- [Privacy Policy](https://getwordcraft.com/privacy): Details on client-side search execution and zero personal data collection.
+- [Terms of Service](https://getwordcraft.com/terms): Terms governing use of WordCraft Tool.
+- [Disclaimer](https://getwordcraft.com/disclaimer): Educational and utility disclaimer regarding independent trademarks.
 
-function extractRoutes(appJsxPath) {
-	if (!fs.existsSync(appJsxPath)) return new Map();
-
-	try {
-		const content = fs.readFileSync(appJsxPath, 'utf8');
-		const routes = new Map();
-		const routeMatches = [...content.matchAll(EXTRACTION_REGEX.route)];
-
-		for (const match of routeMatches) {
-			const routeTag = match[0];
-			const pathMatch = routeTag.match(EXTRACTION_REGEX.path);
-			const elementMatch = routeTag.match(EXTRACTION_REGEX.element);
-			const isIndex = routeTag.includes('index');
-
-			if (elementMatch) {
-				// A guarded route reads `element={<ProtectedRoute><SettingsPage /></ProtectedRoute>}`,
-				// so the page is the innermost component rather than the first one.
-				const componentNames = [...elementMatch[1].matchAll(EXTRACTION_REGEX.elementComponent)];
-				const componentName = componentNames.at(-1)?.[1];
-
-				if (!componentName) continue;
-
-				let routePath;
-
-				if (isIndex) {
-					routePath = '/';
-				} else if (pathMatch) {
-					routePath = pathMatch[1].startsWith('/') ? pathMatch[1] : `/${pathMatch[1]}`;
-				}
-
-				routes.set(componentName, routePath);
-			}
-		}
-
-		return routes;
-	} catch (error) {
-		return new Map();
-	}
-}
-
-function findReactFiles(dir) {
-	return fs.readdirSync(dir).map(item => path.join(dir, item));
-}
-
-function extractHelmetData(content, filePath, routes) {
-	const cleanedContent = cleanContent(content);
-
-	if (!EXTRACTION_REGEX.helmetTest.test(cleanedContent)) {
-		return null;
-	}
-
-	const helmetMatch = content.match(EXTRACTION_REGEX.helmet);
-	if (!helmetMatch) return null;
-
-	const helmetContent = helmetMatch[1];
-	const titleMatch = helmetContent.match(EXTRACTION_REGEX.title);
-	const descMatch = helmetContent.match(EXTRACTION_REGEX.description);
-
-	const title = cleanText(titleMatch?.[1]);
-	const description = cleanText(descMatch?.[1]);
-
-	const fileName = path.basename(filePath, path.extname(filePath));
-	const url = routes.size && routes.has(fileName)
-		? routes.get(fileName)
-		: generateFallbackUrl(fileName);
-
-	return {
-		url,
-		title: title || 'Untitled Page',
-		description: description || 'No description available'
-	};
-}
-
-function generateFallbackUrl(fileName) {
-	const cleanName = fileName.replace(/Page$/, '').toLowerCase();
-	return cleanName === 'app' ? '/' : `/${cleanName}`;
-}
-
-function generateLlmsTxt(pages) {
-	const sortedPages = pages.sort((a, b) => a.title.localeCompare(b.title));
-	const pageEntries = sortedPages.map(page =>
-		`- [${page.title}](${page.url}): ${page.description}`
-	).join('\n');
-
-	return `## Pages\n${pageEntries}`;
-}
-
-function ensureDirectoryExists(dirPath) {
-	if (!fs.existsSync(dirPath)) {
-		fs.mkdirSync(dirPath, { recursive: true });
-	}
-}
-
-function processPageFile(filePath, routes) {
-	try {
-		const content = fs.readFileSync(filePath, 'utf8');
-		return extractHelmetData(content, filePath, routes);
-	} catch (error) {
-		console.error(`❌ Error processing ${filePath}:`, error.message);
-		return null;
-	}
-}
+## Machine-Readable Resources
+- [MCP Server Card](https://getwordcraft.com/.well-known/mcp/server-card.json): Model Context Protocol server capabilities (SEP-1649).
+- [XML Sitemap](https://getwordcraft.com/sitemap.xml): Machine-readable URL index with canonical lastmod dates.
+- [Robots Directives](https://getwordcraft.com/robots.txt): Crawler rules and Content-Signal declarations.
+`;
 
 function main() {
-	const pagesDir = path.join(process.cwd(), 'src', 'pages');
-	const appJsxPath = path.join(process.cwd(), 'src', 'App.jsx');
+  const publicDir = path.join(process.cwd(), 'public');
+  if (!fs.existsSync(publicDir)) {
+    fs.mkdirSync(publicDir, { recursive: true });
+  }
 
-	let pages = [];
+  const llmsPath = path.join(publicDir, 'llms.txt');
+  fs.writeFileSync(llmsPath, LLMS_TXT_CONTENT, 'utf8');
+  console.log('✓ Generated public/llms.txt');
 
-	if (!fs.existsSync(pagesDir)) {
-		pages.push(processPageFile(appJsxPath, new Map()))
-		pages = pages.filter(Boolean);
-	} else {
-		const routes = extractRoutes(appJsxPath);
-		const reactFiles = findReactFiles(pagesDir);
-
-		pages = reactFiles
-			.map(filePath => processPageFile(filePath, routes))
-			.filter(Boolean);
-	}
-
-	if (pages.length === 0) {
-		console.error('❌ No pages with Helmet components found!');
-		process.exit(1);
-	}
-
-
-	const llmsTxtContent = generateLlmsTxt(pages);
-	const outputPath = path.join(process.cwd(), 'public', 'llms.txt');
-
-	ensureDirectoryExists(path.dirname(outputPath));
-	fs.writeFileSync(outputPath, llmsTxtContent, 'utf8');
+  const mdPath = path.join(publicDir, 'index.md');
+  fs.writeFileSync(mdPath, LLMS_TXT_CONTENT, 'utf8');
+  console.log('✓ Generated public/index.md');
 }
 
-const isMainModule = import.meta.url === `file://${process.argv[1]}`;
-
-if (isMainModule) {
-	main();
-}
+main();

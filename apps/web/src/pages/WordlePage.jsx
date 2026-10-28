@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { AlertTriangle, RotateCcw } from 'lucide-react';
+import { AlertTriangle, Check, Copy, RotateCcw } from 'lucide-react';
 import Seo from '@/components/Seo';
 import JsonLd from '@/components/JsonLd';
 import ToolShell from '@/components/ToolShell';
@@ -8,6 +8,7 @@ import { WordChip } from '@/components/Results';
 import { WordleGuide } from '@/components/ToolGuides';
 import useDictionary from '@/hooks/useDictionary';
 import { wordleFilter } from '@/lib/dictionary';
+import { copyText } from '@/lib/clipboard';
 import { TOOLS } from '@/lib/tools';
 import { SITE_URL, webApplicationLd, breadcrumbLd, faqLd } from '@/lib/seo';
 import { cn } from '@/lib/utils';
@@ -53,7 +54,17 @@ const FAQS = [
 export default function WordlePage() {
   const { status, dict, error, retry } = useDictionary();
   const [grid, setGrid] = useState(emptyGrid);
+  const [copied, setCopied] = useState(false);
   const cellRefs = useRef([]);
+
+  const copySuggestions = async () => {
+    if (!suggestions?.length) return;
+    const ok = await copyText(suggestions.join(', '));
+    if (ok) {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    }
+  };
 
   const suggestions = useMemo(() => {
     if (!dict) return null;
@@ -188,11 +199,23 @@ export default function WordlePage() {
             )}
             {status === 'ready' && suggestions && (
               <div className="rounded-xl border border-border bg-background p-4 sm:p-5">
-                <p className="text-sm text-muted-foreground" role="status">
-                  <span className="font-semibold text-foreground">{suggestions.length.toLocaleString()}</span>{' '}
-                  {suggestions.length === 1 ? 'word still fits' : 'words still fit'}
-                  {suggestions.length > 60 && ' · showing 60'}
-                </p>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-sm text-muted-foreground" role="status">
+                    <span className="font-semibold text-foreground">{suggestions.length.toLocaleString()}</span>{' '}
+                    {suggestions.length === 1 ? 'word still fits' : 'words still fit'}
+                    {suggestions.length > 60 && ' · showing 60'}
+                  </p>
+                  {suggestions.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={copySuggestions}
+                      className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-foreground transition-colors hover:bg-secondary active:scale-[0.98]"
+                    >
+                      {copied ? <Check className="h-3.5 w-3.5 text-primary" aria-hidden="true" /> : <Copy className="h-3.5 w-3.5" aria-hidden="true" />}
+                      {copied ? 'Copied' : 'Copy suggestions'}
+                    </button>
+                  )}
+                </div>
                 {suggestions.length === 0 ? (
                   <p className="mt-3 flex items-center gap-2 text-sm font-medium text-destructive" role="alert">
                     <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden="true" />
