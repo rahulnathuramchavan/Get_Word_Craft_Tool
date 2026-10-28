@@ -90,3 +90,39 @@ describe('Agent-Readiness: Organization & LocalBusiness schema', () => {
     assert.ok(businessNode.address.addressCountry);
   });
 });
+
+describe('Agent-Readiness: Content Signals declared in robots.txt', () => {
+  const robotsPaths = [
+    join(ROOT, 'apps', 'web', 'public', 'robots.txt'),
+    join(ROOT, 'robots.txt'),
+  ];
+
+  for (const robotsPath of robotsPaths) {
+    it(`verifies Content-Signal directive in ${robotsPath.replace(ROOT, '')}`, () => {
+      assert.ok(existsSync(robotsPath), `robots.txt must exist: ${robotsPath}`);
+      const content = readFileSync(robotsPath, 'utf8');
+
+      // Must have Content-Signal directive
+      assert.match(
+        content,
+        /^Content-Signal:\s*search=yes,\s*ai-train=no/m,
+        `Content-Signal directive missing or invalid in ${robotsPath}`
+      );
+
+      // Must have User-agent and Allow
+      assert.match(content, /User-agent:\s*\*/);
+      assert.match(content, /Allow:\s*\//);
+      assert.match(content, /Sitemap:\s*https:\/\/getwordcraft\.com\/sitemap\.xml/);
+    });
+  }
+
+  it('verifies .htaccess emits Content-Signal header and prevents stale robots.txt caching', () => {
+    const htaccessPath = join(ROOT, '.htaccess');
+    assert.ok(existsSync(htaccessPath), '.htaccess must exist');
+    const content = readFileSync(htaccessPath, 'utf8');
+
+    assert.match(content, /Header set Content-Signal "search=yes, ai-train=no"/);
+    assert.match(content, /<Files "robots\.txt">[\s\S]*?Cache-Control "public, max-age=0, must-revalidate"/);
+  });
+});
+

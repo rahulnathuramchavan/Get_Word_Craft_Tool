@@ -16,6 +16,7 @@ RewriteRule ^ index.md [L]
 
 # ── RFC 8288 Link Headers for Agent Resource Discovery ────────────────────────
 <IfModule mod_headers.c>
+  Header set Content-Signal "search=yes, ai-train=no"
   SetEnvIf Request_URI "^/(index\.(html|md))?$" IS_HOMEPAGE
   Header add Link '<https://getwordcraft.com/llms.txt>; rel="alternate"; type="text/markdown"' env=IS_HOMEPAGE
   Header add Link '<https://getwordcraft.com/.well-known/mcp/server-card.json>; rel="service-desc"; type="application/json"' env=IS_HOMEPAGE
@@ -42,11 +43,14 @@ RewriteRule ^ index.md [L]
 <Files "robots.txt">
   ForceType text/plain
   Header set Content-Type "text/plain; charset=utf-8"
+  Header set Cache-Control "public, max-age=0, must-revalidate"
+  Header set Content-Signal "search=yes, ai-train=no"
 </Files>
 
 <Files "sitemap.xml">
   ForceType application/xml
   Header set Content-Type "application/xml; charset=utf-8"
+  Header set Cache-Control "public, max-age=0, must-revalidate"
 </Files>
 
 # ── Gzip Compression (mod_deflate) ───────────────────────────────────────────

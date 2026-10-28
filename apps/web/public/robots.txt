@@ -1,5 +1,7 @@
+Content-Signal: search=yes, ai-train=no
+
 User-agent: *
+Content-Signal: search=yes, ai-train=no
 Allow: /
 
 Sitemap: https://getwordcraft.com/sitemap.xml
-Content-Signal: search=yes, ai-train=no
