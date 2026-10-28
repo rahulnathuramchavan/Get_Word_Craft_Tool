@@ -27,14 +27,16 @@ export function Breadcrumbs({ items }) {
   );
 }
 
-export function FaqSection({ faqs }) {
+export function FaqSection({ faqs, heading = true }) {
   if (!faqs?.length) return null;
   return (
-    <section aria-labelledby="faq-heading" className="mt-12">
-      <h2 id="faq-heading" className="font-display text-2xl font-semibold text-foreground">
-        Frequently asked questions
-      </h2>
-      <Accordion type="single" collapsible className="mt-4 rounded-xl border border-border bg-card px-4">
+    <section aria-labelledby={heading ? "faq-heading" : undefined} className={heading ? "mt-12" : undefined}>
+      {heading && (
+        <h2 id="faq-heading" className="font-display text-2xl font-semibold text-foreground">
+          Frequently asked questions
+        </h2>
+      )}
+      <Accordion type="single" collapsible className={`${heading ? 'mt-4 ' : ''}rounded-xl border border-border bg-card px-4`}>
         {faqs.map((f, i) => (
           <AccordionItem key={i} value={`faq-${i}`}>
             <AccordionTrigger className="text-left text-sm font-semibold text-foreground">

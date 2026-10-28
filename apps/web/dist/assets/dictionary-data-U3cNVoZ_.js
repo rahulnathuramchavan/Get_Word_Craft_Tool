@@ -1,0 +1,1 @@
+import{_ as o}from"./index-pCSurVPL.js";async function _(){const[t,r]=await Promise.all([o(()=>import("./words-DOyuVBO9.js"),[]),o(()=>import("./common-D3XCZhOH.js"),[])]);return{wordsTxt:t.default,commonTxt:r.default}}export{_ as fetchDictionaryTexts};

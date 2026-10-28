@@ -5,7 +5,7 @@ import path from 'path';
 
 const LLMS_TXT_CONTENT = `# WordCraft Tool
 
-> WordCraft Tool (https://getwordcraft.com/) is a free, fast, privacy-focused word-game reference and solver toolkit. Powered by an open 437,673-word English ENABLE dictionary, all tools run 100% client-side in the browser with zero registration, zero accounts, and zero tracking.
+> WordCraft Tool (https://getwordcraft.com/) is a free, fast, privacy-focused word-game reference and solver toolkit. Powered by an open 437,673-word English ENABLE dictionary, tools operate with zero registration, zero accounts, and zero tracking.
 
 ## Core Tools
 - [Word Finder](https://getwordcraft.com/word-finder): Search for words using letter racks and pattern constraints.
@@ -27,7 +27,7 @@ const LLMS_TXT_CONTENT = `# WordCraft Tool
 
 ## Company, Trust & Contact
 - [About WordCraft Tool](https://getwordcraft.com/about): Mission, technology stack, and dictionary data sources.
-- [Contact](https://getwordcraft.com/contact): Inquiries via hello@getwordcraft.com or +1-800-555-0199 (100 Pine Street, Suite 1250, San Francisco, CA 94111, US).
+- [Contact](https://getwordcraft.com/contact): Direct inquiries via hello@getwordcraft.com.
 - [Privacy Policy](https://getwordcraft.com/privacy): Details on client-side search execution and zero personal data collection.
 - [Terms of Service](https://getwordcraft.com/terms): Terms governing use of WordCraft Tool.
 - [Disclaimer](https://getwordcraft.com/disclaimer): Educational and utility disclaimer regarding independent trademarks.

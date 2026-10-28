@@ -168,13 +168,10 @@ const PAGES = {
         ],
       },
       {
-        h: 'Mailing Address & Phone',
+        h: 'Contact Channels & Support Notice',
         p: [
-          'WordCraft Tool',
-          '100 Pine Street, Suite 1250',
-          'San Francisco, CA 94111, United States',
-          'Telephone: +1-800-555-0199',
-          'Support Email: hello@getwordcraft.com',
+          'WordCraft Tool is an independent online web utility without a physical walk-in office or telephone hotline.',
+          'All user support, dictionary feedback, and inquiries are handled directly via email at hello@getwordcraft.com.',
         ],
       },
       {
@@ -416,7 +413,12 @@ function StaticPage({ pageKey }) {
       </Helmet>
       <Seo title={page.title} description={page.description} url={`${SITE_URL}${page.path}`} siteName={SITE_NAME} />
       <JsonLd data={[
-        webPageLd({ title: page.title, description: page.description, path: page.path }),
+        webPageLd({
+          title: page.title,
+          description: page.description,
+          path: page.path,
+          dateModified: '2026-10-28',
+        }),
         breadcrumbLd([{ name: 'Home', path: '/' }, { name: page.title, path: page.path }]),
         ...(pageKey === 'contact' || pageKey === 'about' ? [organizationLd] : []),
       ]} />

@@ -150,13 +150,13 @@ export default function HomePage() {
         <title>WordCraft Tool — Find Better Words, Solve Puzzles Faster</title>
         <meta
           name="description"
-          content="Free word-game toolkit: word finder, unscrambler, anagram solver, Wordle helper, crossword finder, definitions, and word lists. Fast, private, no sign-up."
+          content="Free word-game tools: word finder, unscrambler, anagram solver, Wordle helper, crossword finder, definitions, and word lists. No sign-up required."
         />
         <link rel="canonical" href={`${SITE_URL}/`} />
       </Helmet>
       <Seo
         title="WordCraft Tool — Find Better Words, Solve Puzzles Faster"
-        description="Free word finder, unscrambler, anagram solver, Wordle helper, and more. Fast, private, no sign-up."
+        description="Free word-game tools: word finder, unscrambler, anagram solver, Wordle helper, crossword finder, definitions, and word lists. No sign-up required."
         url={`${SITE_URL}/`}
         siteName={SITE_NAME}
       />
@@ -165,12 +165,12 @@ export default function HomePage() {
         organizationLd,
         webApplicationLd({
           name: 'WordCraft Tool',
-          description: 'Free word-game toolkit: word finder, unscrambler, anagram solver, Wordle helper, crossword finder, definitions, and word lists.',
+          description: 'Free word-game tools: word finder, unscrambler, anagram solver, Wordle helper, crossword finder, definitions, and word lists. No sign-up required.',
           path: '/',
         }),
         webPageLd({
           title: 'WordCraft Tool — Find Better Words, Solve Puzzles Faster',
-          description: 'Free word-game toolkit with a word finder, unscrambler, anagram solver, Wordle helper, crossword finder, definitions, and word lists.',
+          description: 'Free word-game tools: word finder, unscrambler, anagram solver, Wordle helper, crossword finder, definitions, and word lists. No sign-up required.',
           path: '/',
         }),
         faqLd(HOME_FAQS),
@@ -391,14 +391,14 @@ export default function HomePage() {
       </div>
 
       {/* FAQ */}
-      <section className="mx-auto w-full max-w-6xl px-4 py-16">
+      <section aria-labelledby="home-faq-heading" className="mx-auto w-full max-w-6xl px-4 py-16">
         <Reveal>
-          <h2 className="font-display text-3xl font-semibold tracking-tight text-foreground">
+          <h2 id="home-faq-heading" className="font-display text-3xl font-semibold tracking-tight text-foreground">
             Frequently asked questions
           </h2>
         </Reveal>
         <div className="mt-6 max-w-3xl">
-          <FaqSection faqs={HOME_FAQS} />
+          <FaqSection faqs={HOME_FAQS} heading={false} />
         </div>
       </section>
     </>

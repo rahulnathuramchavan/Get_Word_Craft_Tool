@@ -3,23 +3,14 @@ export const SITE_NAME = 'WordCraft Tool';
 
 export const organizationLd = {
   '@context': 'https://schema.org',
-  '@type': ['Organization', 'LocalBusiness'],
+  '@type': 'Organization',
   '@id': `${SITE_URL}/#organization`,
   name: SITE_NAME,
   url: SITE_URL,
   logo: `${SITE_URL}/icon.svg`,
   image: `${SITE_URL}/og-image.png`,
-  description: 'A free, fast toolkit of word finders, unscramblers, and puzzle helpers.',
+  description: 'Free word-game tools: word finder, unscrambler, anagram solver, Wordle helper, crossword finder, definitions, and word lists. No sign-up required.',
   email: 'hello@getwordcraft.com',
-  telephone: '+1-800-555-0199',
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: '100 Pine Street, Suite 1250',
-    addressLocality: 'San Francisco',
-    addressRegion: 'CA',
-    postalCode: '94111',
-    addressCountry: 'US',
-  },
   contactPoint: [
     {
       '@type': 'ContactPoint',
@@ -44,15 +35,20 @@ export const websiteLd = {
   publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
 };
 
-export function webPageLd({ title, description, path }) {
-  return {
+export function webPageLd({ title, description, path, datePublished, dateModified }) {
+  const node = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
     name: title,
     description,
     url: `${SITE_URL}${path}`,
     isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL },
+    publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+    mainEntityOfPage: `${SITE_URL}${path}`,
   };
+  if (datePublished) node.datePublished = datePublished;
+  if (dateModified) node.dateModified = dateModified;
+  return node;
 }
 
 export function webApplicationLd({ name, description, path }) {
@@ -95,8 +91,15 @@ export function faqLd(faqs) {
   };
 }
 
-export function articleLd({ title, description, path, image = `${SITE_URL}/og-image.png` }) {
-  return {
+export function articleLd({
+  title,
+  description,
+  path,
+  image = `${SITE_URL}/og-image.png`,
+  datePublished,
+  dateModified,
+}) {
+  const node = {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: title,
@@ -111,4 +114,7 @@ export function articleLd({ title, description, path, image = `${SITE_URL}/og-im
       logo: { '@type': 'ImageObject', url: `${SITE_URL}/icon.svg` },
     },
   };
+  if (datePublished) node.datePublished = datePublished;
+  if (dateModified) node.dateModified = dateModified;
+  return node;
 }

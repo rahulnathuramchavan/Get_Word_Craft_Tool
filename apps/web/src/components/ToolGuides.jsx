@@ -92,14 +92,14 @@ export function WordFinderGuide() {
       <GuideSection title="Common Mistakes to Avoid">
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-lg border border-border/60 bg-muted/20 p-3.5">
-            <h4 className="font-semibold text-foreground">Confusing Rack Letters with Board Pattern</h4>
+            <h3 className="font-semibold text-foreground">Confusing Rack Letters with Board Pattern</h3>
             <p className="mt-1 text-xs text-muted-foreground">
               Entering board letters into the &ldquo;Letters&rdquo; field assumes you hold those tiles on your rack.
               Put board anchors in &ldquo;Pattern&rdquo; so the tool knows they are already on the board.
             </p>
           </div>
           <div className="rounded-lg border border-border/60 bg-muted/20 p-3.5">
-            <h4 className="font-semibold text-foreground">Contradictory Length Filters</h4>
+            <h3 className="font-semibold text-foreground">Contradictory Length Filters</h3>
             <p className="mt-1 text-xs text-muted-foreground">
               Setting a 5-character pattern like <code>c?t??</code> while setting Min length to 6 will yield 0 results,
               because pattern length and numeric length filters must agree.
@@ -185,7 +185,7 @@ export function UnscramblerGuide() {
       <GuideSection title="Common Mistakes to Avoid">
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-lg border border-border/60 bg-muted/20 p-3.5">
-            <h4 className="font-semibold text-foreground">Expecting Board Positional Matching</h4>
+            <h3 className="font-semibold text-foreground">Expecting Board Positional Matching</h3>
             <p className="mt-1 text-xs text-muted-foreground">
               The unscrambler searches every possible anagram and sub-word from your hand. If you need letters fixed to specific
               board squares (e.g. C at position 1 and T at position 3), use the{' '}
@@ -194,7 +194,7 @@ export function UnscramblerGuide() {
             </p>
           </div>
           <div className="rounded-lg border border-border/60 bg-muted/20 p-3.5">
-            <h4 className="font-semibold text-foreground">Typing Punctuation or Spaces</h4>
+            <h3 className="font-semibold text-foreground">Typing Punctuation or Spaces</h3>
             <p className="mt-1 text-xs text-muted-foreground">
               Only English letters (A–Z) and question marks (<code>?</code>) are supported. Numbers and punctuation marks are automatically stripped.
             </p>
@@ -261,7 +261,7 @@ export function AnagramGuide() {
       <GuideSection title="Common Mistakes & Tool Distinctions">
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-lg border border-border/60 bg-muted/20 p-3.5">
-            <h4 className="font-semibold text-foreground">Expecting Shorter Sub-Words</h4>
+            <h3 className="font-semibold text-foreground">Expecting Shorter Sub-Words</h3>
             <p className="mt-1 text-xs text-muted-foreground">
               If you enter <code>planet</code>, Anagram Solver will only look for 6-letter words. If you want 5-letter (<em>plant</em>),
               4-letter (<em>lane</em>), or 3-letter words (<em>pan</em>), use the{' '}
@@ -269,7 +269,7 @@ export function AnagramGuide() {
             </p>
           </div>
           <div className="rounded-lg border border-border/60 bg-muted/20 p-3.5">
-            <h4 className="font-semibold text-foreground">Multi-Word Phrases</h4>
+            <h3 className="font-semibold text-foreground">Multi-Word Phrases</h3>
             <p className="mt-1 text-xs text-muted-foreground">
               This solver operates on single dictionary words. It does not generate multi-word phrases or full sentence anagrams.
             </p>
@@ -351,14 +351,14 @@ export function WordleGuide() {
       <GuideSection title="Avoiding Contradictory Clues & Common Mistakes">
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-lg border border-border/60 bg-muted/20 p-3.5">
-            <h4 className="font-semibold text-foreground">Marking Gray Letters That Are Actually Yellow</h4>
+            <h3 className="font-semibold text-foreground">Marking Gray Letters That Are Actually Yellow</h3>
             <p className="mt-1 text-xs text-muted-foreground">
               If a letter is in the word, never mark it gray in another row unless it is an unrepeated duplicate.
               Marking a letter gray in Row 1 and yellow/green in Row 2 creates an impossible contradiction, resulting in &ldquo;Nothing matches those clues&rdquo;.
             </p>
           </div>
           <div className="rounded-lg border border-border/60 bg-muted/20 p-3.5">
-            <h4 className="font-semibold text-foreground">Curated Answers vs. Full Dictionary</h4>
+            <h3 className="font-semibold text-foreground">Curated Answers vs. Full Dictionary</h3>
             <p className="mt-1 text-xs text-muted-foreground">
               The New York Times Wordle answer list is drawn from ~2,300 familiar English words, while our engine checks all 18,376 valid 5-letter entries.
               Always prioritize common everyday words over obscure terms when choosing your next guess.
@@ -423,14 +423,14 @@ export function CrosswordGuide() {
       <GuideSection title="Capabilities vs. Semantic Limitations">
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-lg border border-border/60 bg-muted/20 p-3.5">
-            <h4 className="font-semibold text-foreground">Lexical Pattern Matching Only</h4>
+            <h3 className="font-semibold text-foreground">Lexical Pattern Matching Only</h3>
             <p className="mt-1 text-xs text-muted-foreground">
               This tool matches letter positions against reference dictionary words. It does not parse clue semantics, trivia, or puns.
               You must use your own judgment to pick the answer that fits the crossword clue.
             </p>
           </div>
           <div className="rounded-lg border border-border/60 bg-muted/20 p-3.5">
-            <h4 className="font-semibold text-foreground">Choosing the Right Dictionary</h4>
+            <h3 className="font-semibold text-foreground">Choosing the Right Dictionary</h3>
             <p className="mt-1 text-xs text-muted-foreground">
               Standard newspaper crosswords (Monday through Thursday) stick to familiar vocabulary. Select{' '}
               <strong>Common words</strong> to filter out obscure jargon. For Friday/Saturday editions or cryptic puzzles, switch to{' '}
